@@ -1,4 +1,4 @@
-# Open Policy Agent - OPA Management Application
+# OPA Management Application
 
 This project aims to provide a simple and easy way to host your own OPA playground,
 manage your policies and data, and test them against your own services.
