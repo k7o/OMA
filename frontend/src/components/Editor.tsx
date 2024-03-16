@@ -7,7 +7,7 @@ export const Editor = () => {
     useData()
 
   return (
-    <div class='flex h-screen'>
+    <div class='flex h-screen w-full'>
       <SplitPane gutterClass='gutter gutter-horizontal'>
         <div>
           <h3 class='bg-gray-400 text-white px-2 relative'>POLICY</h3>
@@ -30,7 +30,7 @@ export const Editor = () => {
               <h3 class='bg-gray-400 text-white px-2 relative'>INPUT</h3>
               <MonacoEditor
                 class='w-full h-full relative'
-                language='rego'
+                language='json'
                 value={input()}
                 onChange={setInput}
                 options={{
@@ -42,7 +42,7 @@ export const Editor = () => {
               <h3 class='bg-gray-400 text-white px-2 relative'>DATA</h3>
               <MonacoEditor
                 class='w-full h-full relative'
-                language='rego'
+                language='json'
                 value={data()}
                 onChange={setData}
                 options={{
@@ -54,7 +54,7 @@ export const Editor = () => {
               <h3 class='bg-gray-400 text-white px-2 relative'>OUTPUT</h3>
               <MonacoEditor
                 class='w-full h-full relative'
-                language='rego'
+                language='json'
                 value={output()}
                 options={{
                   scrollBeyondLastLine: false,

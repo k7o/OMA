@@ -42,8 +42,8 @@ export const MonacoEditor = (inputProps: MonacoEditorProps) => {
   const props = mergeProps(
     {
       theme: 'vs',
-      width: '100%',
-      height: '100%',
+      // width: '100%',
+      // height: '100%',
       loadingState: 'Loading…',
       saveViewState: true,
     },
@@ -67,6 +67,7 @@ export const MonacoEditor = (inputProps: MonacoEditorProps) => {
     try {
       const monaco = await loadMonaco
       const editor = createEditor(monaco)
+
       monaco.languages.register({ id: 'rego' })
       monaco.languages.registerDocumentHighlightProvider('rego', {
         provideDocumentHighlights: (model, position) => {
