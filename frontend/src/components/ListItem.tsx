@@ -1,18 +1,16 @@
 import { Accessor, For, Match, Setter, Show, Switch, createSignal } from 'solid-js'
 import ChevronRight from '../assets/chevron-right.svg'
 import ChevronDown from '../assets/chevron-down.svg'
-import { MonacoEditor } from '../lib/solid-monaco'
+import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 
 import ReplayIcon from '../assets/replay-icon.svg'
-import { useData } from './DataContext'
 
-export const ListItem = (props: { item: PolicyRun }) => {
-  const { setPolicy, setInput } = useData()
+export const ListItem = (props: { item: PolicyRun; previousItem?: PolicyRun }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
 
   return (
-    <li class={`py-3 hover:bg-gray-50 flex relative flex-col h-full`}>
+    <li class={`py-3 hover:bg-gray-50 flex relative flex-col h-full grow`}>
       <div class="flex items-center" onClick={() => setOpen(!open())}>
         <Show
           when={!open()}
@@ -26,7 +24,7 @@ export const ListItem = (props: { item: PolicyRun }) => {
           }}
           class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
         >
-          <img src={ReplayIcon} alt="replay" class="w-10 h-10" />
+          <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
         </button>
         <span class="text-sm">{props.item.timestamp.toUTCString()}</span>
         <span class="text-sm">{props.item.id}</span>
@@ -37,18 +35,34 @@ export const ListItem = (props: { item: PolicyRun }) => {
         <Switch
           fallback={
             <Match when={tab() === 'Input'}>
-              <SmallEditor value={props.item.input} language="json" />
+              <SmallEditor
+                value={props.item.input}
+                previousValue={props.previousItem?.input}
+                language="json"
+              />
             </Match>
           }
         >
           <Match when={tab() === 'Input'}>
-            <SmallEditor value={props.item.input} language="json" />
+            <SmallEditor
+              value={props.item.input}
+              previousValue={props.previousItem?.input}
+              language="json"
+            />
           </Match>
           <Match when={tab() === 'Output'}>
-            <SmallEditor value={props.item.output} language="json" />
+            <SmallEditor
+              value={JSON.stringify(JSON.parse(props.item.output).result, null, 2)}
+              previousValue={props.previousItem?.output}
+              language="json"
+            />
           </Match>
           <Match when={tab() === 'Policy'}>
-            <SmallEditor value={props.item.policy} language="rego" />
+            <SmallEditor
+              value={props.item.policy}
+              previousValue={props.previousItem?.policy}
+              language="rego"
+            />
           </Match>
         </Switch>
       </Show>
@@ -83,20 +97,44 @@ const TabBar = (props: TabBarProps) => {
   )
 }
 
-const SmallEditor = (props: { value: string; language: string }) => {
+const SmallEditor = (props: { value: string; language: string; previousValue?: string }) => {
+  if (props.previousValue === undefined || true) {
+    return (
+      <MonacoEditor
+        class={`h-full mt-2 flex grow`}
+        language={props.language}
+        value={props.value}
+        onMount={(_, editor) => {
+          editor.layout({
+            width: editor.getScrollWidth(),
+            height: Math.min(editor.getContentHeight(), 500),
+          })
+        }}
+        options={{
+          scrollBeyondLastLine: false,
+          showFoldingControls: 'always',
+          readOnly: true,
+        }}
+      />
+    )
+  }
+
   return (
-    <MonacoEditor
-      class={`h-full mt-2 flex`}
-      language={props.language}
-      value={props.value}
+    <MonacoDiffEditor
+      class={`mt-2`}
+      originalLanguage={props.language}
+      modifiedLanguage={props.language}
+      modified={props.value}
+      original={props.previousValue}
       onMount={(_, editor) => {
         editor.layout({
-          width: editor.getScrollWidth(),
-          height: Math.min(editor.getContentHeight(), 500),
+          width: 100,
+          height: 100,
         })
       }}
       options={{
         scrollBeyondLastLine: false,
+        showFoldingControls: 'always',
         readOnly: true,
       }}
     />
