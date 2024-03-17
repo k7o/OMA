@@ -37,7 +37,7 @@ func (a *App) Eval(ctx context.Context, req *models.EvalRequest) (*models.EvalRe
 		return nil, err
 	}
 
-	resp := a.opa.MakeEvalResponse(result, req.Policy)
+	resp := result.MakeEvalResponse(req.Policy)
 	resultJson, err := json.Marshal(resp.Result)
 	if err != nil {
 		return nil, errors.New("failed to marshal result to json")

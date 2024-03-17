@@ -7,11 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
-	"log"
-
-	"github.com/dgryski/trifles/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 type Opa struct{}
@@ -35,12 +32,8 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("/opt/homebrew/bin/opa", "eval", "-d", policyFile, "-i", inputFile, "--profile", "data", "--coverage")
-	output, err := cmd.Output()
-	if exitErr, ok := err.(*exec.ExitError); ok {
-		stderr := string(exitErr.Stderr)
-		return nil, fmt.Errorf("opa eval failed: %s", stderr)
-	} else if err != nil && len(output) == 0 {
+	output, err := cmd(fmt.Sprintf("eval -d %s -i %s --profile data --coverage", policyFile, inputFile))
+	if err != nil {
 		return nil, err
 	}
 
@@ -53,64 +46,23 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 	return &result, nil
 }
 
-func (opa *Opa) MakeEvalResponse(result *models.EvalResult, policy string) *models.EvalResponse {
-	return &models.EvalResponse{
-		Id:     uuid.UUIDv4(),
-		Result: makeResult(result, policy),
-		Errors: result.Errors,
-		Coverage: models.CoverageResponse{
-			Covered:      makeCoverage(result.Coverage.Files),
-			CoveredLines: result.Coverage.CoveredLines,
-			Coverage:     int(result.Coverage.Coverage),
-		},
-		Timestamp: time.Now(),
-	}
-}
-
-func makeCoverage(files map[string]models.Coverage) []models.Covered {
-	covered := []models.Covered{}
-	for _, file := range files {
-		for _, c := range file.Covered {
-			covered = append(covered, models.Covered{
-				Start: c.Start.Row,
-				End:   c.End.Row,
-			})
-		}
-	}
-	return covered
-}
-
-func makeResult(result *models.EvalResult, policy string) interface{} {
-	if len(result.Result) == 0 {
-		return nil
-	} else if result.Result[0].Expressions == nil {
-		return nil
-	} else if len(result.Result[0].Expressions) == 0 {
-		return nil
+func cmd(command string) ([]byte, error) {
+	splits := strings.Split(command, " ")
+	if command == "" || len(splits) == 0 {
+		log.Debug().Msg("empty opa command")
+		return nil, fmt.Errorf("empty opa command")
 	}
 
-	lines := strings.Split(policy, "\n")
-	packageNesting := []string{}
-	if len(lines) > 0 {
-		if strings.HasPrefix(lines[0], "package ") {
-			packageNesting = strings.Split(strings.TrimPrefix(lines[0], "package "), ".")
-		}
+	cmd := exec.Command("/opt/homebrew/bin/opa", splits...)
+	output, err := cmd.Output()
+	if exitErr, ok := err.(*exec.ExitError); ok && len(output) == 0 {
+		stderr := string(exitErr.Stderr)
+		return nil, fmt.Errorf("%s command: %s", splits[0], stderr)
+	} else if err != nil && len(output) == 0 {
+		return nil, err
 	}
 
-	return getPackageResult(result.Result[0].Expressions[0].Value, packageNesting)
-}
-
-func getPackageResult(result interface{}, splits []string) interface{} {
-	if len(splits) == 0 {
-		return result
-	}
-
-	if resultMap, ok := result.(map[string]interface{}); ok {
-		return getPackageResult(resultMap[splits[0]], splits[1:])
-	}
-
-	log.Fatalf("Expected map[string]interface{} but got %T", result)
-	return nil
+	return output, nil
 }
 
 func writeBytesToFile(data []byte, ext string) (string, func(), error) {
