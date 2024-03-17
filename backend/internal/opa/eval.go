@@ -22,7 +22,7 @@ func New() *Opa {
 
 func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 	// Write the module to a temporary file.
-	moduleFile, cleanup, err := writeBytesToFile([]byte(policy), "rego")
+	policyFile, cleanup, err := writeBytesToFile([]byte(policy), "rego")
 	defer cleanup()
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("/opt/homebrew/bin/opa", "eval", "-d", moduleFile, "-i", inputFile, "--profile", "data", "--coverage")
+	cmd := exec.Command("/opt/homebrew/bin/opa", "eval", "-d", policyFile, "-i", inputFile, "--profile", "data", "--coverage")
 	output, err := cmd.Output()
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		stderr := string(exitErr.Stderr)

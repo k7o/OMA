@@ -26,3 +26,11 @@ type Covered struct {
 	Start int `json:"start"`
 	End   int `json:"end"`
 }
+
+type FormatRequest struct {
+	Policy string `json:"policy"`
+}
+
+type FormatResponse struct {
+	Formatted string `json:"formatted"`
+}

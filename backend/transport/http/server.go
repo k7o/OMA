@@ -32,6 +32,7 @@ func (s *Server) Run() error {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/eval", s.eval)
+		r.Post("/format", s.format)
 		r.Get("/playground-logs", s.playgroundLogs)
 	})
 
@@ -49,6 +50,22 @@ func (s *Server) eval(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := s.app.Eval(r.Context(), req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (s *Server) format(w http.ResponseWriter, r *http.Request) {
+	req, err := jsonReqBody[models.FormatRequest](w, r)
+	if err != nil {
+		return
+	}
+
+	result, err := s.app.Format(r.Context(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
