@@ -16,7 +16,7 @@ type ErrorResult = {
 }
 
 export const Header = () => {
-  const { data, input, policy, setOutput, setCoverage } = useData()
+  const { data, input, policy, setPolicy, setOutput, setCoverage } = useData()
 
   async function evaluate() {
     try {
@@ -57,16 +57,46 @@ export const Header = () => {
     }
   }
 
+  async function format() {
+    try {
+      const res = await fetch('http://localhost:8080/api/format', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          policy: policy(),
+        }),
+      })
+
+      if (res.ok) {
+        let json: FormatResponse = { formatted: policy() }
+        try {
+          json = (await res.json()) as FormatResponse
+        } catch (e) {
+          console.error(e)
+          setOutput(await res.text())
+        }
+
+        setPolicy(json.formatted)
+      } else {
+        setOutput(await res.text())
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
-    <header class='h-14 flex justify-between'>
-      <div class='items-center flex mx-2 '>
-        <img src={OpaIcon} id='opa-logo' alt='OPA logo' class='h-10' />
-        <h3 class='text-2xl hidden md:block'>The Rego Playground</h3>
+    <header class="h-14 flex justify-between">
+      <div class="items-center flex mx-2 ">
+        <img src={OpaIcon} id="opa-logo" alt="OPA logo" class="h-10" />
+        <h3 class="text-2xl hidden md:block">The Rego Playground</h3>
       </div>
-      <div class='items-center flex'>
-        <Button text='Evaluate' icon={PlayIcon} onClick={evaluate} />
-        <Button text='Format' icon={FormatIcon} />
-        <Button text='Publish' icon={PublishIcon} />
+      <div class="items-center flex">
+        <Button text="Evaluate" icon={PlayIcon} onClick={evaluate} />
+        <Button text="Format" icon={FormatIcon} onClick={format} />
+        <Button text="Publish" icon={PublishIcon} />
       </div>
     </header>
   )

@@ -1,0 +1,3 @@
+type FormatResponse = {
+    formatted: string
+}
