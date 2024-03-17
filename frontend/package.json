@@ -19,6 +19,12 @@
     "vite": "^5.0.11",
     "vite-plugin-solid": "^2.8.2"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 100
+  },
   "dependencies": {
     "@monaco-editor/loader": "^1.4.0",
     "@solidjs/router": "^0.13.0",

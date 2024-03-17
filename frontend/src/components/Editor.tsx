@@ -10,32 +10,43 @@ export const Editor = () => {
     monaco: Monaco
     editor: editor.IStandaloneCodeEditor
   }>()
-  const {
-    data,
-    input,
-    policy,
-    setData,
-    setInput,
-    setPolicy,
-    output,
-    coverage,
-    setCoverage,
-  } = useData()
+  const { data, input, policy, setData, setInput, setPolicy, output, coverage, setCoverage } =
+    useData()
 
   createEffect(() => {
     if (policyInstance()) {
       clearDecorations()
 
       if (coverage()) {
-        let monaco = policyInstance()!.monaco
-        const decorations =
-          coverage()!.covered.map<editor.IModelDeltaDecoration>((covered) => {
-            return {
-              range: new monaco.Range(covered.start, 1, covered.end, 1),
+        let instance = policyInstance()!
+        const decorations = coverage()!.covered.map<editor.IModelDeltaDecoration>((covered) => {
+          return {
+            range: new instance.monaco.Range(covered.start, 1, covered.end, 1),
+            options: {
+              isWholeLine: true,
+              className: 'bg-green-200',
+            },
+          }
+        })
+
+        instance.editor
+          .getModel()
+          ?.getLinesContent()
+          .forEach((line, index) => {
+            if (
+              line.trim() !== '' &&
+              !line.startsWith('package') &&
+              !line.startsWith('import') &&
+              !line.startsWith('}') &&
+              !coverage()!.covered.some((c) => index + 1 >= c.start && index + 1 <= c.end)
+            ) {
+              decorations.push({
+              range: new instance.monaco.Range(index + 1, 1, index + 1, 1),
               options: {
                 isWholeLine: true,
                 className: 'bg-red-200',
               },
+              })
             }
           })
 
@@ -51,22 +62,22 @@ export const Editor = () => {
         editor
           .getModel()!
           .getAllDecorations()
-          .map((d) => d.id)
+          .map((d) => d.id),
       )
     }
   }
 
   return (
-    <div class='flex h-screen w-full'>
-      <SplitPane gutterClass='gutter gutter-horizontal'>
+    <div class="flex h-screen w-full">
+      <SplitPane gutterClass="gutter gutter-horizontal">
         <div>
-          <h3 class='bg-gray-400 text-white px-2 relative'>POLICY</h3>
+          <h3 class="bg-gray-400 text-white px-2 relative">POLICY</h3>
           <MonacoEditor
-            class='w-full h-full relative'
-            language='rego'
+            class="w-full h-full relative"
+            language="rego"
             value={policy()}
             onChange={(value) => {
-              setCoverage(undefined)
+              setCoverage()
               setPolicy(value)
             }}
             onMount={(monaco, editor) => {
@@ -78,27 +89,27 @@ export const Editor = () => {
           />
         </div>
         <div>
-          <SplitPane
-            direction='vertical'
-            gutterClass='gutter gutter-vertical relative'
-          >
+          <SplitPane direction="vertical" gutterClass="gutter gutter-vertical relative">
             <div>
-              <h3 class='bg-gray-400 text-white px-2 relative'>INPUT</h3>
+              <h3 class="bg-gray-400 text-white px-2 relative">INPUT</h3>
               <MonacoEditor
-                class='w-full h-full relative'
-                language='json'
+                class="w-full h-full relative"
+                language="json"
                 value={input()}
-                onChange={setInput}
+                onChange={(value) => {
+                  setCoverage()
+                  setInput(value)
+                }}
                 options={{
                   scrollBeyondLastLine: false,
                 }}
               />
             </div>
             <div>
-              <h3 class='bg-gray-400 text-white px-2 relative'>DATA</h3>
+              <h3 class="bg-gray-400 text-white px-2 relative">DATA</h3>
               <MonacoEditor
-                class='w-full h-full relative'
-                language='json'
+                class="w-full h-full relative"
+                language="json"
                 value={data()}
                 onChange={setData}
                 options={{
@@ -107,10 +118,10 @@ export const Editor = () => {
               />
             </div>
             <div>
-              <h3 class='bg-gray-400 text-white px-2 relative'>OUTPUT</h3>
+              <h3 class="bg-gray-400 text-white px-2 relative">OUTPUT</h3>
               <MonacoEditor
-                class='w-full h-full relative'
-                language='json'
+                class="w-full h-full relative"
+                language="json"
                 value={output()}
                 options={{
                   scrollBeyondLastLine: false,
