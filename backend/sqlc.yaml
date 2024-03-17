@@ -7,3 +7,12 @@ sql:
           go:
               package: "decisionlogs"
               out: "internal/decisionlogs"
+              emit_interface: true
+    - engine: "sqlite"
+      queries: "internal/playgroundlogs/queries"
+      schema: "internal/playgroundlogs/migrations"
+      gen:
+          go:
+              package: "playgroundlogs"
+              out: "internal/playgroundlogs"
+              emit_interface: true

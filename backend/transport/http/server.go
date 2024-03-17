@@ -32,6 +32,7 @@ func (s *Server) Run() error {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/eval", s.eval)
+		r.Get("/playground-logs", s.playgroundLogs)
 	})
 
 	if err := http.ListenAndServe(":8080", router); err != nil {
@@ -53,7 +54,19 @@ func (s *Server) eval(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonRespBody(w, result)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (s *Server) playgroundLogs(w http.ResponseWriter, r *http.Request) {
+	logs, err := s.app.PlaygroundLogs(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(logs)
 }
 
 func jsonReqBody[T any](w http.ResponseWriter, r *http.Request) (*T, error) {
@@ -65,9 +78,4 @@ func jsonReqBody[T any](w http.ResponseWriter, r *http.Request) (*T, error) {
 	}
 
 	return t, nil
-}
-
-func jsonRespBody[T any](w http.ResponseWriter, t *T) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(t)
 }

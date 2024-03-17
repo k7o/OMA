@@ -7,7 +7,6 @@ package decisionlogs
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -23,7 +22,7 @@ RETURNING decision_id, path, input, result, timestamp
 type CreateDecisionLogParams struct {
 	DecisionID string
 	Path       string
-	Input      sql.NullString
+	Input      string
 	Result     string
 	Timestamp  time.Time
 }

@@ -3,10 +3,13 @@ package db
 import (
 	"context"
 	"database/sql"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
+
+	"github.com/go-yaml/yaml"
+	"github.com/rs/zerolog/log"
 )
 
 func InitInMemoryDatabase(ctx context.Context) (*sql.DB, error) {
@@ -15,7 +18,7 @@ func InitInMemoryDatabase(ctx context.Context) (*sql.DB, error) {
 		return nil, err
 	}
 
-	schema, err := Schema("./internal/decisionlogs/migrations")
+	schema, err := schema()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +28,7 @@ func InitInMemoryDatabase(ctx context.Context) (*sql.DB, error) {
 		return nil, err
 	}
 
-	log.Println("Schema applied: \n", schema)
+	log.Debug().Msgf("Schema applied: \n %s", schema)
 
 	return db, nil
 }
@@ -61,11 +64,22 @@ func readMigrationsDir(path string) ([]string, error) {
 	return migrationFiles, nil
 }
 
-func Schema(path string) (string, error) {
+func schema() (string, error) {
 	schema := ""
-	files, err := readMigrationsDir(path)
+
+	migrationDirectories, err := sqlcMigrationDirs()
 	if err != nil {
 		return "", err
+	}
+
+	var files []string
+	for _, path := range migrationDirectories {
+		f, err := readMigrationsDir(path)
+		if err != nil {
+			return "", err
+		}
+
+		files = append(files, f...)
 	}
 
 	for _, file := range files {
@@ -77,4 +91,36 @@ func Schema(path string) (string, error) {
 	}
 
 	return schema, nil
+}
+
+func sqlcMigrationDirs() ([]string, error) {
+	sqlcFileName := "sqlc.yaml"
+	sqlcFilePath, err := filepath.Abs(sqlcFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	yamlFile, err := os.ReadFile(sqlcFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse yaml file
+	var config struct {
+		SQL []struct {
+			Schema string `yaml:"schema"`
+		} `yaml:"sql"`
+	}
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract migration directories
+	var migrationDirectories []string
+	for _, item := range config.SQL {
+		migrationDirectories = append(migrationDirectories, filepath.Join(strings.TrimSuffix(sqlcFilePath, sqlcFileName), item.Schema))
+	}
+
+	return migrationDirectories, nil
 }

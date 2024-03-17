@@ -7,8 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"log"
+
+	"github.com/dgryski/trifles/uuid"
 )
 
 type Opa struct{}
@@ -49,6 +52,7 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 
 func (opa *Opa) MakeEvalResponse(result *models.EvalResult, policy string) *models.EvalResponse {
 	return &models.EvalResponse{
+		Id:     uuid.UUIDv4(),
 		Result: makeResult(result, policy),
 		Errors: result.Errors,
 		Coverage: models.CoverageResponse{
@@ -56,6 +60,7 @@ func (opa *Opa) MakeEvalResponse(result *models.EvalResult, policy string) *mode
 			CoveredLines: result.Coverage.CoveredLines,
 			Coverage:     int(result.Coverage.Coverage),
 		},
+		Timestamp: time.Now(),
 	}
 }
 

@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type EvalRequest struct {
 	Policy string `json:"policy"`
 	Input  string `json:"input"`
@@ -7,9 +9,11 @@ type EvalRequest struct {
 }
 
 type EvalResponse struct {
-	Result   interface{}      `json:"result"`
-	Errors   []EvalError      `json:"errors"`
-	Coverage CoverageResponse `json:"coverage"`
+	Id        string           `json:"id"`
+	Result    interface{}      `json:"result"`
+	Errors    []EvalError      `json:"errors"`
+	Coverage  CoverageResponse `json:"coverage"`
+	Timestamp time.Time        `json:"timestamp"`
 }
 
 type CoverageResponse struct {

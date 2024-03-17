@@ -5,14 +5,13 @@
 package decisionlogs
 
 import (
-	"database/sql"
 	"time"
 )
 
 type DecisionLog struct {
 	DecisionID string
 	Path       string
-	Input      sql.NullString
+	Input      string
 	Result     string
 	Timestamp  time.Time
 }
