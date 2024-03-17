@@ -1,10 +1,60 @@
 import { SplitPane } from 'solid-split-pane'
 import { useData } from './DataContext'
 import { MonacoEditor } from '../lib/solid-monaco'
+import { createEffect, createSignal } from 'solid-js'
+import { editor } from 'monaco-editor'
+import type { Monaco } from '@monaco-editor/loader'
 
 export const Editor = () => {
-  const { data, input, policy, setData, setInput, setPolicy, output } =
-    useData()
+  const [policyInstance, setPolicyInstance] = createSignal<{
+    monaco: Monaco
+    editor: editor.IStandaloneCodeEditor
+  }>()
+  const {
+    data,
+    input,
+    policy,
+    setData,
+    setInput,
+    setPolicy,
+    output,
+    coverage,
+    setCoverage,
+  } = useData()
+
+  createEffect(() => {
+    if (policyInstance()) {
+      clearDecorations()
+
+      if (coverage()) {
+        let monaco = policyInstance()!.monaco
+        const decorations =
+          coverage()!.covered.map<editor.IModelDeltaDecoration>((covered) => {
+            return {
+              range: new monaco.Range(covered.start, 1, covered.end, 1),
+              options: {
+                isWholeLine: true,
+                className: 'bg-red-200',
+              },
+            }
+          })
+
+        policyInstance()!.editor.createDecorationsCollection(decorations)
+      }
+    }
+  })
+
+  function clearDecorations() {
+    if (policyInstance()) {
+      const editor = policyInstance()!.editor
+      editor.removeDecorations(
+        editor
+          .getModel()!
+          .getAllDecorations()
+          .map((d) => d.id)
+      )
+    }
+  }
 
   return (
     <div class='flex h-screen w-full'>
@@ -15,7 +65,13 @@ export const Editor = () => {
             class='w-full h-full relative'
             language='rego'
             value={policy()}
-            onChange={setPolicy}
+            onChange={(value) => {
+              setCoverage(undefined)
+              setPolicy(value)
+            }}
+            onMount={(monaco, editor) => {
+              setPolicyInstance({ monaco, editor })
+            }}
             options={{
               scrollBeyondLastLine: false,
             }}

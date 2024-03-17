@@ -11,10 +11,7 @@ function createInitialState() {
   const [input, setInput] = createSignal(defaultInput)
   const [data, setData] = createSignal('')
   const [output, setOutput] = createSignal('')
-
-  createEffect(() => {
-    console.log('Output:', output())
-  })
+  const [coverage, setCoverage] = createSignal<Coverage | undefined>()
 
   return {
     policy,
@@ -25,6 +22,8 @@ function createInitialState() {
     setData,
     output,
     setOutput,
+    coverage,
+    setCoverage,
   } as const
 }
 

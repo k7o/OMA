@@ -16,7 +16,7 @@ type ErrorResult = {
 }
 
 export const Header = () => {
-  const { data, input, policy, setOutput } = useData()
+  const { data, input, policy, setOutput, setCoverage } = useData()
 
   async function evaluate() {
     try {
@@ -45,6 +45,10 @@ export const Header = () => {
             setOutput(output)
           } else {
             setOutput(JSON.stringify(res.result, null, 2))
+          }
+
+          if (res.coverage) {
+            setCoverage(res.coverage)
           }
         })
       }
