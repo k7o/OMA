@@ -37,7 +37,10 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 
 	cmd := exec.Command("/opt/homebrew/bin/opa", "eval", "-d", moduleFile, "-i", inputFile, "--profile", "data", "--coverage")
 	output, err := cmd.Output()
-	if err != nil && len(output) == 0 {
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		stderr := string(exitErr.Stderr)
+		return nil, fmt.Errorf("opa eval failed: %s", stderr)
+	} else if err != nil && len(output) == 0 {
 		return nil, err
 	}
 

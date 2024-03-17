@@ -126,6 +126,7 @@ export const Editor = () => {
                 options={{
                   scrollBeyondLastLine: false,
                   readOnly: true,
+                  minimap: { enabled: false },
                 }}
               />
             </div>
