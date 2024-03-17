@@ -1,0 +1,9 @@
+version: "2"
+sql:
+    - engine: "sqlite"
+      queries: "internal/decisionlogs/queries"
+      schema: "internal/decisionlogs/migrations"
+      gen:
+          go:
+              package: "decisionlogs"
+              out: "internal/decisionlogs"
