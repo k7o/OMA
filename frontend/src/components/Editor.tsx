@@ -5,15 +5,25 @@ import { For, Show, createEffect, createResource, createSignal } from 'solid-js'
 import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
-import { c } from 'vite/dist/node/types.d-FdqQ54oU'
+import { ListItem } from './ListItem'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
     monaco: Monaco
     editor: editor.IStandaloneCodeEditor
   }>()
-  const { data, input, policy, setData, setInput, setPolicy, output, coverage, setCoverage } =
-    useData()
+  const {
+    data,
+    input,
+    policy,
+    setData,
+    setInput,
+    setPolicy,
+    output,
+    coverage,
+    setCoverage,
+    localHistory,
+  } = useData()
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
       const res = await fetch('http://localhost:8080/api/lint', {
@@ -94,24 +104,40 @@ export const Editor = () => {
     <div class="flex h-screen w-full">
       <SplitPane gutterClass="gutter gutter-horizontal">
         <div>
-          <h3 class="bg-gray-400 text-white px-2 relative">POLICY</h3>
-          <MonacoEditor
-            class="w-full h-full relative"
-            language="rego"
-            value={policy()}
-            onChange={(value) => {
-              setCoverage()
-              lint()
-              setPolicy(value)
-            }}
-            onMount={(monaco, editor) => {
-              setPolicyInstance({ monaco, editor })
-            }}
-            options={{
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-            }}
-          />
+          <SplitPane
+            gutterClass="gutter gutter-vertical relative"
+            direction="vertical"
+            sizes={[60, 40]}
+          >
+            <div>
+              <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
+              <MonacoEditor
+                class="w-full h-full relative"
+                language="rego"
+                value={policy()}
+                onChange={(value) => {
+                  setCoverage()
+                  lint()
+                  setPolicy(value)
+                }}
+                onMount={(monaco, editor) => {
+                  setPolicyInstance({ monaco, editor })
+                }}
+                options={{
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                }}
+              />
+            </div>
+            <div class="relative">
+              <h3 class="bg-gray-400 text-white px-2 relative">HISTORY</h3>
+              <ul>
+                <For fallback={<li class='px-2 pt-4'>No history</li>} each={localHistory()}>
+                  {(item) => <ListItem item={item} />}
+                </For>
+              </ul>
+            </div>
+          </SplitPane>
         </div>
         <div>
           <SplitPane
@@ -151,7 +177,7 @@ export const Editor = () => {
             <div>
               <h3 class="bg-gray-400 text-white px-2 relative">OUTPUT</h3>
               <MonacoEditor
-                class="w-full h-full relative"
+                class="w-full h-full relative overflow-hidden"
                 language="json"
                 value={output()}
                 options={{
@@ -162,7 +188,7 @@ export const Editor = () => {
                 }}
               />
             </div>
-            <div class="block">
+            <div class="block overflow-hidden">
               <h3 class="bg-gray-400 text-white px-2 relative">LINT</h3>
               <div class="m-2">
                 <Show

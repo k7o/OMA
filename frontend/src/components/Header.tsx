@@ -4,19 +4,11 @@ import FormatIcon from '../assets/format-icon.png'
 import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
-
-type ErrorResult = {
-  message: string
-  code: string
-  location: {
-    file: string
-    row: number
-    col: number
-  }
-}
+import { EvalResult } from '../types/EvalResult'
+import { createSignal } from 'solid-js'
 
 export const Header = () => {
-  const { data, input, policy, setPolicy, setOutput, setCoverage } = useData()
+  const { data, input, policy, setPolicy, setOutput, setCoverage, setLocalHistory } = useData()
 
   async function evaluate() {
     try {
@@ -35,10 +27,10 @@ export const Header = () => {
       if (!res.ok) {
         setOutput(await res.text())
       } else {
-        res.json().then((res) => {
-          if (res.errors as ErrorResult[]) {
+        res.json().then((res: EvalResult) => {
+          if (res.errors) {
             let output = `${res.errors.length} error${res.errors.length > 1 ? 's' : ''} occurred:\n`
-            res.errors.forEach((err: ErrorResult) => {
+            res.errors.forEach((err) => {
               output += `policy.rego:${err.location.row}:${err.code} ${err.message}\n`
             })
 
@@ -50,11 +42,27 @@ export const Header = () => {
           if (res.coverage) {
             setCoverage(res.coverage)
           }
+
+          pushHistory(res)
         })
       }
     } catch (e) {
       console.error(e)
     }
+  }
+
+  function pushHistory(evalResult: EvalResult) {
+    setLocalHistory((history) => [
+      {
+        id: evalResult.id,
+        policy: policy(),
+        input: input(),
+        data: data(),
+        output: JSON.stringify(evalResult, null, 2),
+        timestamp: new Date(evalResult.timestamp),
+      },
+      ...history,
+    ])
   }
 
   async function format() {

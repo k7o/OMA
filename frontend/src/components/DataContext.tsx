@@ -6,6 +6,7 @@ function createInitialState() {
   const [data, setData] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
+  const [localHistory, setLocalHistory] = createSignal<PolicyRun[]>([])
 
   return {
     policy,
@@ -18,6 +19,8 @@ function createInitialState() {
     setOutput,
     coverage,
     setCoverage,
+    localHistory,
+    setLocalHistory,
   } as const
 }
 
