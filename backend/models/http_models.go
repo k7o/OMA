@@ -41,6 +41,14 @@ type FormatResponse struct {
 	Formatted string `json:"formatted"`
 }
 
+type LintRequest struct {
+	Policy string `json:"policy"`
+}
+
+type LintResponse struct {
+	ErrorOutput string `json:"result"`
+}
+
 func (result *EvalResult) MakeEvalResponse(policy string) *EvalResponse {
 	return &EvalResponse{
 		Id:     uuid.UUIDv4(),

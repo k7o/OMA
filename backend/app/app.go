@@ -74,6 +74,16 @@ func (a *App) Format(ctx context.Context, req *models.FormatRequest) (*models.Fo
 	return &models.FormatResponse{Formatted: policy}, nil
 }
 
+func (a *App) Lint(ctx context.Context, req *models.LintRequest) (*models.LintResponse, error) {
+	lint, err := a.opa.Lint(req.Policy)
+	if err != nil {
+		log.Debug().Err(err).Msg("linting policy")
+		return nil, err
+	}
+
+	return &models.LintResponse{ErrorOutput: lint}, nil
+}
+
 func (a *App) PlaygroundLogs(ctx context.Context) ([]playgroundlogs.PlaygroundLog, error) {
 	logs, err := a.playgroundLogsRepository.ListPlaygroundlogs(ctx)
 	if err != nil {
