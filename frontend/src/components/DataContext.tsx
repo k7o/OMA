@@ -1,10 +1,4 @@
-import {
-  createSignal,
-  createContext,
-  useContext,
-  JSX,
-  createEffect,
-} from 'solid-js'
+import { createSignal, createContext, useContext, JSX } from 'solid-js'
 
 function createInitialState() {
   const [policy, setPolicy] = createSignal(defaultPolicy)
@@ -30,11 +24,7 @@ function createInitialState() {
 const DataContext = createContext<ReturnType<typeof createInitialState>>()
 
 export const DataProvider = (props: { children: JSX.Element }) => {
-  return (
-    <DataContext.Provider value={createInitialState()}>
-      {props.children}
-    </DataContext.Provider>
-  )
+  return <DataContext.Provider value={createInitialState()}>{props.children}</DataContext.Provider>
 }
 
 export const useData = () => useContext(DataContext)!

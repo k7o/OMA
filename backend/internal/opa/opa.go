@@ -68,27 +68,29 @@ func (opa *Opa) Format(policy string) (string, error) {
 	return string(output), nil
 }
 
-func (opa *Opa) Lint(policy string) (string, error) {
+func (opa *Opa) Lint(policy string) (string, []string, error) {
 	policyFile, cleanup, err := writeBytesToFile([]byte(policy), "rego")
 	defer cleanup()
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	output, err := cmd(fmt.Sprintf("check %s", policyFile))
 	if errors.Is(err, ErrExitError) {
 		output = []byte(strings.TrimPrefix(err.Error(), ErrExitError.Error()+"\ncheck command: "))
 	} else if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	outputString := string(output)
 	outputString = checkFirstLineRegex.ReplaceAllString(outputString, "$1: \n$3")
 
-	result := ""
+	var msg string
+	var errors []string
 	for i, line := range strings.Split(outputString, "\n") {
+		line = strings.TrimSpace(line)
 		if i == 0 {
-			result += line + "\n"
+			msg = line
 			continue
 		}
 
@@ -96,13 +98,17 @@ func (opa *Opa) Lint(policy string) (string, error) {
 			groups := policyFileRegex.FindStringSubmatch(line)
 			log.Debug().Msgf("a: %s", groups)
 			line = policyFileRegex.ReplaceAllString(line, "$1: $2")
-			line = strings.TrimSuffix(line, ":")
+			line = strings.TrimSpace(strings.TrimSuffix(line, ":"))
 		}
 
-		result += "  line " + line + "\n"
+		if line == "" {
+			continue
+		}
+
+		errors = append(errors, fmt.Sprintf("line %s", line))
 	}
 
-	return outputString, nil
+	return msg, errors, nil
 }
 
 func cmd(command string) ([]byte, error) {

@@ -1,9 +1,11 @@
 import { SplitPane } from 'solid-split-pane'
 import { useData } from './DataContext'
 import { MonacoEditor } from '../lib/solid-monaco'
-import { createEffect, createSignal } from 'solid-js'
+import { For, Show, createEffect, createResource, createSignal } from 'solid-js'
 import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
+import { Lint } from '../types/Lint'
+import { c } from 'vite/dist/node/types.d-FdqQ54oU'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -12,6 +14,27 @@ export const Editor = () => {
   }>()
   const { data, input, policy, setData, setInput, setPolicy, output, coverage, setCoverage } =
     useData()
+  const [linting, { refetch: lint }] = createResource<Lint>(async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/lint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ policy: policy() }),
+      })
+
+      if (res.ok) {
+        try {
+          return res.json()
+        } catch (error) {
+          console.error('Failed to parse lint response', error, res)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch lint', error)
+    }
+  })
 
   createEffect(() => {
     if (policyInstance()) {
@@ -78,6 +101,7 @@ export const Editor = () => {
             value={policy()}
             onChange={(value) => {
               setCoverage()
+              lint()
               setPolicy(value)
             }}
             onMount={(monaco, editor) => {
@@ -90,7 +114,11 @@ export const Editor = () => {
           />
         </div>
         <div>
-          <SplitPane direction="vertical" gutterClass="gutter gutter-vertical relative">
+          <SplitPane
+            direction="vertical"
+            gutterClass="gutter gutter-vertical relative"
+            sizes={[40, 20, 20, 20]}
+          >
             <div>
               <h3 class="bg-gray-400 text-white px-2 relative">INPUT</h3>
               <MonacoEditor
@@ -133,6 +161,22 @@ export const Editor = () => {
                   wordWrap: 'on',
                 }}
               />
+            </div>
+            <div class="block">
+              <h3 class="bg-gray-400 text-white px-2 relative">LINT</h3>
+              <div class="m-2">
+                <Show
+                  when={linting()?.errors && linting()!.errors.length > 0}
+                  fallback={<span>No linter violations</span>}
+                >
+                  <p class="px-6 ">{linting()?.message}</p>
+                  <ul class="px-6">
+                    <For each={linting()?.errors}>
+                      {(error) => <li class="list-disc">{error}</li>}
+                    </For>
+                  </ul>
+                </Show>
+              </div>
             </div>
           </SplitPane>
         </div>

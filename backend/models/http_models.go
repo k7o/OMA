@@ -46,7 +46,8 @@ type LintRequest struct {
 }
 
 type LintResponse struct {
-	ErrorOutput string `json:"result"`
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
 }
 
 func (result *EvalResult) MakeEvalResponse(policy string) *EvalResponse {
