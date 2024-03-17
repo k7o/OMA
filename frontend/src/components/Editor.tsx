@@ -41,11 +41,11 @@ export const Editor = () => {
               !coverage()!.covered.some((c) => index + 1 >= c.start && index + 1 <= c.end)
             ) {
               decorations.push({
-              range: new instance.monaco.Range(index + 1, 1, index + 1, 1),
-              options: {
-                isWholeLine: true,
-                className: 'bg-red-200',
-              },
+                range: new instance.monaco.Range(index + 1, 1, index + 1, 1),
+                options: {
+                  isWholeLine: true,
+                  className: 'bg-red-200',
+                },
               })
             }
           })
@@ -85,6 +85,7 @@ export const Editor = () => {
             }}
             options={{
               scrollBeyondLastLine: false,
+              wordWrap: 'on',
             }}
           />
         </div>
@@ -102,6 +103,7 @@ export const Editor = () => {
                 }}
                 options={{
                   scrollBeyondLastLine: false,
+                  wordWrap: 'on',
                 }}
               />
             </div>
@@ -114,6 +116,7 @@ export const Editor = () => {
                 onChange={setData}
                 options={{
                   scrollBeyondLastLine: false,
+                  wordWrap: 'on',
                 }}
               />
             </div>
@@ -127,6 +130,7 @@ export const Editor = () => {
                   scrollBeyondLastLine: false,
                   readOnly: true,
                   minimap: { enabled: false },
+                  wordWrap: 'on',
                 }}
               />
             </div>
