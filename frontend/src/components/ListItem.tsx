@@ -4,10 +4,12 @@ import ChevronDown from '../assets/chevron-down.svg'
 import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 
 import ReplayIcon from '../assets/replay-icon.svg'
+import { useData } from './DataContext'
 
 export const ListItem = (props: { item: PolicyRun; previousItem?: PolicyRun }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
+  const { setPolicy, setInput } = useData()
 
   return (
     <li class={`py-3 hover:bg-gray-50 flex relative flex-col h-full grow`}>
@@ -20,6 +22,8 @@ export const ListItem = (props: { item: PolicyRun; previousItem?: PolicyRun }) =
         </Show>
         <button
           onClick={(e) => {
+            setInput(props.item.input)
+            setPolicy(props.item.policy)
             e.stopPropagation()
           }}
           class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
