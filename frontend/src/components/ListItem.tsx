@@ -18,7 +18,9 @@ export const ListItem = (props: {
   console.log('list item', props.item)
 
   return (
-    <li class={`py-3 hover:bg-gray-50 flex relative flex-col h-full grow`}>
+    <li
+      class={`py-3 hover:bg-gray-50 flex relative overflow-y-scroll flex-col ${open() && 'h-full'}`}
+    >
       <div class="flex items-center" onClick={() => setOpen(!open())}>
         <Show
           when={!open()}
@@ -58,14 +60,22 @@ export const ListItem = (props: {
           <Match when={tab() === 'Input'}>
             <SmallEditor
               value={JSON.stringify(JSON.parse(props.item.input), null, 2)}
-              previousValue={props.previousItem?.input}
+              previousValue={
+                props.previousItem
+                  ? JSON.stringify(JSON.parse(props.previousItem.input), null, 2)
+                  : undefined
+              }
               language="json"
             />
           </Match>
           <Match when={tab() === 'Result'}>
             <SmallEditor
               value={JSON.stringify(JSON.parse(props.item.result), null, 2)}
-              previousValue={props.previousItem?.result}
+              previousValue={
+                props.previousItem
+                  ? JSON.stringify(JSON.parse(props.previousItem.result), null, 2)
+                  : undefined
+              }
               language="json"
             />
           </Match>
@@ -119,7 +129,7 @@ const TabBar = (props: TabBarProps) => {
 }
 
 const SmallEditor = (props: { value: string; language: string; previousValue?: string }) => {
-  if (props.previousValue === undefined || true) {
+  if (props.previousValue === undefined || props.previousValue === props.value) {
     return (
       <MonacoEditor
         class={`h-full mt-2 flex grow`}
@@ -142,7 +152,7 @@ const SmallEditor = (props: { value: string; language: string; previousValue?: s
 
   return (
     <MonacoDiffEditor
-      class={`mt-2`}
+      class={`mt-2 h-full`}
       originalLanguage={props.language}
       modifiedLanguage={props.language}
       modified={props.value}

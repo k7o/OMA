@@ -131,7 +131,7 @@ export const Editor = () => {
             </div>
             <div class="relative">
               <h3 class="bg-gray-400 text-white px-2 relative">HISTORY</h3>
-              <ul>
+              <ul class="h-full">
                 <For fallback={<li class="px-2 pt-4">No history</li>} each={localHistory()}>
                   {(item, index) => {
                     if (localHistory().length === 1 || localHistory().length === index() + 1) {
