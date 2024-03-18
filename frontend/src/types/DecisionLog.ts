@@ -2,6 +2,6 @@ export type DecisionLog = {
   decision_id: string
   path: string
   input: string
-  result: string
-  timestamp: Date
+  output: string
+  timestamp: string
 }

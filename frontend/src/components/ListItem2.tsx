@@ -7,9 +7,9 @@ import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
 import { DecisionLog } from '../types/DecisionLog'
 
-export const ListItem = (props: {
-  item: DecisionLog & { policy?: string }
-  previousItem?: DecisionLog & { policy?: string }
+export const ListItem2 = (props: {
+  item: DecisionLog & { policy: string }
+  previousItem?: DecisionLog & { policy: string }
 }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
@@ -26,24 +26,22 @@ export const ListItem = (props: {
         >
           <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
         </Show>
-        <Show when={props.item.policy}>
-          <button
-            onClick={(e) => {
-              setInput(props.item.input)
-              setPolicy(props.item.policy!)
-              e.stopPropagation()
-            }}
-            class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
-          >
-            <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
-          </button>
-        </Show>
+        <button
+          onClick={(e) => {
+            setInput(props.item.input)
+            setPolicy(props.item.policy)
+            e.stopPropagation()
+          }}
+          class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
+        >
+          <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
+        </button>
         <span class="text-sm">{new Date(props.item.timestamp).toUTCString()}</span>
         <span class="text-sm">{props.item.decision_id}</span>
       </div>
 
       <Show when={open()}>
-        <TabBar tab={tab} setTab={setTab} hasPolicy={props.item.policy !== undefined} />
+        <TabBar tab={tab} setTab={setTab} />
         <Switch
           fallback={
             <Match when={tab() === 'Input'}>
@@ -57,38 +55,35 @@ export const ListItem = (props: {
         >
           <Match when={tab() === 'Input'}>
             <SmallEditor
-              value={JSON.stringify(JSON.parse(props.item.input), null, 2)}
+              value={props.item.input}
               previousValue={props.previousItem?.input}
               language="json"
             />
           </Match>
-          <Match when={tab() === 'Result'}>
+          <Match when={tab() === 'Output'}>
             <SmallEditor
-              value={JSON.stringify(JSON.parse(props.item.result), null, 2)}
-              previousValue={props.previousItem?.result}
+              value={JSON.stringify(JSON.parse(props.item.output), null, 2)}
+              previousValue={props.previousItem?.output}
               language="json"
             />
           </Match>
-          <Show when={() => tab() === 'Policy' && props.item.policy !== undefined}>
-            <Match when={tab() === 'Policy'}>
-              <SmallEditor
-                value={props.item.policy!}
-                previousValue={props.previousItem?.policy}
-                language="rego"
-              />
-            </Match>
-          </Show>
+          <Match when={tab() === 'Policy'}>
+            <SmallEditor
+              value={props.item.policy}
+              previousValue={props.previousItem?.policy!}
+              language="rego"
+            />
+          </Match>
         </Switch>
       </Show>
     </li>
   )
 }
 
-const Tabs = ['Input', 'Policy', 'Result'] as const
+const Tabs = ['Input', 'Policy', 'Output'] as const
 type Tabs = (typeof Tabs)[number]
 
 type TabBarProps = {
-  hasPolicy: boolean
   tab: Accessor<Tabs>
   setTab: Setter<Tabs>
 }
@@ -97,22 +92,16 @@ const TabBar = (props: TabBarProps) => {
   return (
     <div class="flex mt-2 w-full bg-gray-100">
       <For each={Tabs}>
-        {(tab, index) => {
-          if (tab === 'Policy' && !props.hasPolicy) {
-            return null
-          }
-
-          return (
-            <button
-              class={`${index() !== 0 && 'ml-2'} px-4 py- rounded-xl ${
-                props.tab() === tab ? 'bg-gray-200' : 'bg-gray-100'
-              }`}
-              onClick={() => props.setTab(tab)}
-            >
-              {tab}
-            </button>
-          )
-        }}
+        {(tab, index) => (
+          <button
+            class={`${index() !== 0 && 'ml-2'} px-4 py- rounded-xl ${
+              props.tab() === tab ? 'bg-gray-200' : 'bg-gray-100'
+            }`}
+            onClick={() => props.setTab(tab)}
+          >
+            {tab}
+          </button>
+        )}
       </For>
     </div>
   )
