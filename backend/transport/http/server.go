@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"oma/contract"
 	"oma/models"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -40,6 +41,18 @@ func (s *Server) Run() error {
 		r.Get("/decision-log/list", s.listDecisionLogs)
 		r.Get("/playground-logs", s.playgroundLogs)
 	})
+
+	if _, err := os.Stat("../frontend/dist"); err == nil {
+		fs := http.FileServer(http.Dir("../frontend/dist"))
+		http.Handle("/", fs)
+
+		router.HandleFunc("/*", func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = "/"
+			fs.ServeHTTP(w, r)
+		})
+	} else {
+		log.Info().Msg("dist directory does not exist, continuing without serving frontend assets.")
+	}
 
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		return err
