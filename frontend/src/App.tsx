@@ -25,7 +25,7 @@ const Page = (children: () => JSX.Element) => {
         <SidebarItem href='/play' icon={PlayIcon} text='Play' />
         <SidebarItem href='/decision-logs' icon={LogsIcon} text='Logs' />
       </div>
-      <div class='w-screen h-screen'>{children()}</div>
+      <div class='w-screen h-screen flex flex-col'>{children()}</div>
     </div>
   )
 }

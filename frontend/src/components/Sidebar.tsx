@@ -1,6 +1,6 @@
 export const SideBar = () => {
   return (
-    <div class='flex flex-col h-screen w-1/6 bg-gray-900 text-white'>
+    <div class='flex flex-col h-full w-1/6 bg-gray-900 text-white'>
       <div class='flex items-center justify-center h-16 bg-gray-800'>
         <h1 class='text-2xl'>Sidebar</h1>
       </div>

@@ -101,7 +101,7 @@ export const Editor = () => {
   }
 
   return (
-    <div class="flex h-screen w-full">
+    <div class="flex h-full w-full">
       <SplitPane gutterClass="gutter gutter-horizontal">
         <div>
           <SplitPane
@@ -151,10 +151,10 @@ export const Editor = () => {
             gutterClass="gutter gutter-vertical relative"
             sizes={[40, 20, 20, 20]}
           >
-            <div>
-              <h3 class="bg-gray-400 text-white px-2 relative">INPUT</h3>
+            <div class='flex flex-col'>
+              <h3 class="bg-gray-400 text-white px-2 relative over">INPUT</h3>
               <MonacoEditor
-                class="w-full h-full relative"
+                class="w-full h-full relative overflow-hidden"
                 language="json"
                 value={input()}
                 onChange={(value) => {
@@ -170,7 +170,7 @@ export const Editor = () => {
             <div>
               <h3 class="bg-gray-400 text-white px-2 relative">DATA</h3>
               <MonacoEditor
-                class="w-full h-full relative"
+                class="w-full h-full relative overflow-hidden"
                 language="json"
                 value={data()}
                 onChange={setData}
