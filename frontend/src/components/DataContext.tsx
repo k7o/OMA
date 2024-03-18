@@ -1,4 +1,5 @@
 import { createSignal, createContext, useContext, JSX } from 'solid-js'
+import { DecisionLog } from '../types/DecisionLog'
 
 function createInitialState() {
   const [policy, setPolicy] = createSignal(defaultPolicy)
@@ -6,7 +7,7 @@ function createInitialState() {
   const [data, setData] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
-  const [localHistory, setLocalHistory] = createSignal<PolicyRun[]>([])
+  const [localHistory, setLocalHistory] = createSignal<DecisionLog[]>([])
 
   return {
     policy,

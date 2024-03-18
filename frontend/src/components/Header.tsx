@@ -54,12 +54,13 @@ export const Header = () => {
   function pushHistory(evalResult: EvalResult) {
     setLocalHistory((history) => [
       {
-        id: evalResult.id,
+        decision_id: evalResult.id,
         policy: policy(),
         input: input(),
         data: data(),
-        output: JSON.stringify(evalResult, null, 2),
-        timestamp: new Date(evalResult.timestamp),
+        path: "",
+        result: JSON.stringify(evalResult, null, 2),
+        timestamp: evalResult.timestamp,
       },
       ...history,
     ])

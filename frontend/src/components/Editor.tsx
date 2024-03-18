@@ -5,7 +5,7 @@ import { For, Show, createEffect, createResource, createSignal } from 'solid-js'
 import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
-import { ListItem2 } from './ListItem2'
+import { ListItem } from './ListItem'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -135,10 +135,10 @@ export const Editor = () => {
                 <For fallback={<li class="px-2 pt-4">No history</li>} each={localHistory()}>
                   {(item, index) => {
                     if (localHistory().length === 1 || localHistory().length === index() + 1) {
-                      return <ListItem2 item={item} />
+                      return <ListItem item={item} />
                     }
 
-                    return <ListItem2 item={item} previousItem={localHistory()[index() + 1]} />
+                    return <ListItem item={item} previousItem={localHistory()[index() + 1]} />
                   }}
                 </For>
               </ul>
