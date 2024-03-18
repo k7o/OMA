@@ -37,9 +37,16 @@ func (s *Server) Run() error {
 		r.Post("/eval", s.eval)
 		r.Post("/format", s.format)
 		r.Post("/lint", s.lint)
-		r.Post("/decision-log/logs", s.pushDecisionLog)
-		r.Get("/decision-log/list", s.listDecisionLogs)
-		r.Get("/playground-logs", s.playgroundLogs)
+	})
+
+	router.Route("/api/decision-log", func(r chi.Router) {
+		// Default logs push route from OPA.
+		r.Post("/logs", s.pushDecisionLog)
+		r.Get("/list", s.listDecisionLogs)
+	})
+
+	router.Route("/api/playground-log", func(r chi.Router) {
+		r.Get("/logs", s.playgroundLogs)
 	})
 
 	if _, err := os.Stat("../frontend/dist"); err == nil {
