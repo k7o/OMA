@@ -9,7 +9,7 @@ services:
     nid-policies-registry:
         url: https://gitlab.com/api/v4/projects/55642500/packages/generic/bundle # First part of the bundle URL
     oma:
-        url: https://webhook.site/51f2afda-e89f-43f8-a3e5-6d4a678461a2
+        url: http://localhost:8080/api/decision-log
         response_header_timeout_seconds: 5
 
 # status:

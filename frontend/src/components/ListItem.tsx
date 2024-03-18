@@ -5,8 +5,12 @@ import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 
 import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
+import { DecisionLog } from '../types/DecisionLog'
 
-export const ListItem = (props: { item: PolicyRun; previousItem?: PolicyRun }) => {
+export const ListItem = (props: {
+  item: DecisionLog & { policy: string }
+  previousItem?: DecisionLog
+}) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
   const { setPolicy, setInput } = useData()

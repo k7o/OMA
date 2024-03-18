@@ -50,6 +50,31 @@ type LintResponse struct {
 	Errors  []string `json:"errors"`
 }
 
+type DecisionLogRequest []DecisionLogRequestItem
+type DecisionLogRequestItem struct {
+	Labels struct {
+		ID      string `json:"id"`
+		Version string `json:"version"`
+	} `json:"labels"`
+	DecisionID string `json:"decision_id"`
+	Bundles    map[string]struct {
+		Revision string `json:"revision"`
+	} `json:"bundles"`
+	Path        string      `json:"path"`
+	Result      interface{} `json:"result"`
+	Input       interface{} `json:"input"`
+	RequestedBy string      `json:"requested_by"`
+	Timestamp   time.Time   `json:"timestamp"`
+	Metrics     struct {
+		CounterServerQueryCacheHit int `json:"counter_server_query_cache_hit"`
+		TimerRegoExternalResolveNs int `json:"timer_rego_external_resolve_ns"`
+		TimerRegoInputParseNs      int `json:"timer_rego_input_parse_ns"`
+		TimerRegoQueryEvalNs       int `json:"timer_rego_query_eval_ns"`
+		TimerServerHandlerNs       int `json:"timer_server_handler_ns"`
+	} `json:"metrics"`
+	ReqID int `json:"req_id"`
+}
+
 func (result *EvalResult) MakeEvalResponse(policy string) *EvalResponse {
 	return &EvalResponse{
 		Id:     uuid.UUIDv4(),

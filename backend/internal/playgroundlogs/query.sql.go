@@ -20,12 +20,12 @@ RETURNING id, input, policy, result, coverage, timestamp
 `
 
 type CreatePlaygroundLogParams struct {
-	ID        string
-	Input     string
-	Policy    string
-	Result    string
-	Coverage  string
-	Timestamp time.Time
+	ID        string    `json:"id"`
+	Input     string    `json:"input"`
+	Policy    string    `json:"policy"`
+	Result    string    `json:"result"`
+	Coverage  string    `json:"coverage"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func (q *Queries) CreatePlaygroundLog(ctx context.Context, arg CreatePlaygroundLogParams) (PlaygroundLog, error) {

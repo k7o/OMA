@@ -9,9 +9,10 @@ import (
 )
 
 type DecisionLog struct {
-	DecisionID string
-	Path       string
-	Input      string
-	Result     string
-	Timestamp  time.Time
+	DecisionID string    `json:"decision_id"`
+	Path       string    `json:"path"`
+	Input      string    `json:"input"`
+	RevisionID *string   `json:"revision_id"`
+	Result     string    `json:"result"`
+	Timestamp  time.Time `json:"timestamp"`
 }

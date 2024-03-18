@@ -12,19 +12,20 @@ import (
 
 const createDecisionLog = `-- name: CreateDecisionLog :one
 INSERT INTO decision_logs (
-  decision_id, path, input, result, timestamp
+  decision_id, path, input, revision_id, result, timestamp
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?
 )
-RETURNING decision_id, path, input, result, timestamp
+RETURNING decision_id, path, input, revision_id, result, timestamp
 `
 
 type CreateDecisionLogParams struct {
-	DecisionID string
-	Path       string
-	Input      string
-	Result     string
-	Timestamp  time.Time
+	DecisionID string    `json:"decision_id"`
+	Path       string    `json:"path"`
+	Input      string    `json:"input"`
+	RevisionID *string   `json:"revision_id"`
+	Result     string    `json:"result"`
+	Timestamp  time.Time `json:"timestamp"`
 }
 
 func (q *Queries) CreateDecisionLog(ctx context.Context, arg CreateDecisionLogParams) (DecisionLog, error) {
@@ -32,6 +33,7 @@ func (q *Queries) CreateDecisionLog(ctx context.Context, arg CreateDecisionLogPa
 		arg.DecisionID,
 		arg.Path,
 		arg.Input,
+		arg.RevisionID,
 		arg.Result,
 		arg.Timestamp,
 	)
@@ -40,6 +42,7 @@ func (q *Queries) CreateDecisionLog(ctx context.Context, arg CreateDecisionLogPa
 		&i.DecisionID,
 		&i.Path,
 		&i.Input,
+		&i.RevisionID,
 		&i.Result,
 		&i.Timestamp,
 	)
@@ -47,7 +50,7 @@ func (q *Queries) CreateDecisionLog(ctx context.Context, arg CreateDecisionLogPa
 }
 
 const getDecisionLog = `-- name: GetDecisionLog :one
-SELECT decision_id, path, input, result, timestamp FROM decision_logs
+SELECT decision_id, path, input, revision_id, result, timestamp FROM decision_logs
 WHERE decision_id = ? LIMIT 1
 `
 
@@ -58,6 +61,7 @@ func (q *Queries) GetDecisionLog(ctx context.Context, decisionID string) (Decisi
 		&i.DecisionID,
 		&i.Path,
 		&i.Input,
+		&i.RevisionID,
 		&i.Result,
 		&i.Timestamp,
 	)
@@ -65,7 +69,7 @@ func (q *Queries) GetDecisionLog(ctx context.Context, decisionID string) (Decisi
 }
 
 const listDecisionLogs = `-- name: ListDecisionLogs :many
-SELECT decision_id, path, input, result, timestamp FROM decision_logs
+SELECT decision_id, path, input, revision_id, result, timestamp FROM decision_logs
 ORDER BY "timestamp" DESC
 `
 
@@ -82,6 +86,7 @@ func (q *Queries) ListDecisionLogs(ctx context.Context) ([]DecisionLog, error) {
 			&i.DecisionID,
 			&i.Path,
 			&i.Input,
+			&i.RevisionID,
 			&i.Result,
 			&i.Timestamp,
 		); err != nil {

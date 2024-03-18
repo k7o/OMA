@@ -8,8 +8,8 @@ ORDER BY "timestamp" DESC;
 
 -- name: CreateDecisionLog :one
 INSERT INTO decision_logs (
-  decision_id, path, input, result, timestamp
+  decision_id, path, input, revision_id, result, timestamp
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?
 )
 RETURNING *;
