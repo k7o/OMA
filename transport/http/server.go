@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"oma/contract"
 	"oma/models"
-	"os"
+	"oma/ui"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -49,17 +49,18 @@ func (s *Server) Run() error {
 		r.Get("/logs", s.playgroundLogs)
 	})
 
-	if _, err := os.Stat("../frontend/dist"); err == nil {
-		fs := http.FileServer(http.Dir("../frontend/dist"))
-		http.Handle("/", fs)
-
-		router.HandleFunc("/*", func(w http.ResponseWriter, r *http.Request) {
-			r.URL.Path = "/"
-			fs.ServeHTTP(w, r)
-		})
-	} else {
-		log.Info().Msg("dist directory does not exist, continuing without serving frontend assets.")
+	assets, err := ui.Assets()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to embed UI assets")
+		return err
 	}
+
+	fs := http.FileServer(http.FS(assets))
+	router.Handle("/assets/*", fs)
+	router.HandleFunc("/*", func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = ""
+		fs.ServeHTTP(w, r)
+	})
 
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		return err

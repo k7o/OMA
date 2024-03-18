@@ -1,5 +1,5 @@
 {
-  "name": "vite-template-solid",
+  "name": "oma",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "vite build",
     "serve": "vite preview"
   },
+  "type": "module",
   "license": "MIT",
   "devDependencies": {
     "@locator/babel-jsx": "^0.4.3",
