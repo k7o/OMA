@@ -18,6 +18,7 @@ function createInitialState() {
     createStore<ApplicationSettings>(
       {
         OpaServerUrl: 'http://localhost:8181',
+        BundleServerUrl: 'https://gitlab.com/api/v4/projects/55642500/packages/generic/bundle',
       },
       { name: 'createInitialState' },
     ),

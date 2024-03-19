@@ -37,6 +37,7 @@ func (s *Server) Run() error {
 		r.Post("/eval", s.eval)
 		r.Post("/format", s.format)
 		r.Post("/lint", s.lint)
+		r.Get("/test-all", s.testAll)
 	})
 
 	router.Route("/api/decision-log", func(r chi.Router) {
@@ -108,6 +109,22 @@ func (s *Server) lint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := s.app.Lint(r.Context(), req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (s *Server) testAll(w http.ResponseWriter, r *http.Request) {
+	req, err := jsonReqBody[models.EvalRequest](w, r)
+	if err != nil {
+		return
+	}
+
+	result, err := s.app.TestAll(r.Context(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

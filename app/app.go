@@ -87,6 +87,36 @@ func (a *App) Lint(ctx context.Context, req *models.LintRequest) (*models.LintRe
 	}, nil
 }
 
+func (a *App) TestAll(ctx context.Context, req *models.EvalRequest) (*models.TestAllResponse, error) {
+	decisionLogs, err := a.decisionLogRepository.ListDecisionLogs(ctx)
+	if err != nil {
+		log.Debug().Err(err).Msg("failed to get decision logs from database")
+		return nil, errors.New("failed to get decision logs from database")
+	}
+
+	results := make([]models.EvalResponse, 0, len(decisionLogs))
+	for _, decisionLog := range decisionLogs {
+		evalResponse, err := a.Eval(ctx, &models.EvalRequest{
+			Policy: req.Policy,
+			Input:  decisionLog.Input,
+			Options: models.EvalOptions{
+				Coverage: false,
+				Path:     decisionLog.Path,
+			},
+		})
+		if err != nil {
+			log.Debug().Err(err).Msg("failed to evaluate decision log against policy")
+			return nil, errors.New("failed to evaluate decision log against policy")
+		}
+
+		results = append(results, *evalResponse)
+	}
+
+	return &models.TestAllResponse{
+		Results: results,
+	}, nil
+}
+
 func (a *App) PlaygroundLogs(ctx context.Context) ([]playgroundlogs.PlaygroundLog, error) {
 	logs, err := a.playgroundLogsRepository.ListPlaygroundlogs(ctx)
 	if err != nil {

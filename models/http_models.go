@@ -16,7 +16,8 @@ type EvalRequest struct {
 }
 
 type EvalOptions struct {
-	Coverage bool `json:"coverage"`
+	Coverage bool   `json:"coverage"`
+	Path     string `json:"path"`
 }
 
 type EvalResponse struct {
@@ -53,6 +54,10 @@ type LintRequest struct {
 type LintResponse struct {
 	Message string   `json:"message"`
 	Errors  []string `json:"errors"`
+}
+
+type TestAllResponse struct {
+	Results []EvalResponse `json:"results"`
 }
 
 type DecisionLogRequest []DecisionLogRequestItem
