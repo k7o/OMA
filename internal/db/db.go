@@ -3,12 +3,12 @@ package db
 import (
 	"context"
 	"database/sql"
+	"io/fs"
+	"oma/contract"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
-	"github.com/go-yaml/yaml"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,20 +17,62 @@ func InitInMemoryDatabase(ctx context.Context) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	schema, err := schema()
-	if err != nil {
-		return nil, err
-	}
-
-	// Run migrations.
-	if _, err := db.ExecContext(ctx, schema); err != nil {
-		return nil, err
-	}
-
-	log.Debug().Msgf("Schema applied: \n %s", schema)
-
 	return db, nil
+}
+
+func Migrate(ctx context.Context, db *sql.DB, migrationEmbeds ...contract.MigrationEmbed) error {
+	schema, err := schema(migrationEmbeds)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(schema)
+	if err != nil {
+		return err
+	}
+
+	log.Info().Msg("migrated database")
+	log.Debug().Msgf("Database schema: \n%s", schema)
+
+	return nil
+}
+
+func schema(migrationEmbeds []contract.MigrationEmbed) (string, error) {
+	schemaFiles := map[string]string{}
+	for _, migration := range migrationEmbeds {
+		fsys := migration.Migrations()
+		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			// Check if the current entry is not a directory
+			if !d.IsDir() {
+				fileBytes, err := fs.ReadFile(fsys, path)
+				if err != nil {
+					return err
+				}
+				schemaFiles[filepath.Base(path)] = string(fileBytes)
+			}
+			return nil
+		})
+		if err != nil {
+			return "", err
+		}
+	}
+
+	fileNames := make([]string, 0, len(schemaFiles))
+	for fileName := range schemaFiles {
+		fileNames = append(fileNames, fileName)
+	}
+
+	sort.Strings(fileNames)
+
+	var schema string
+	for _, fileName := range fileNames {
+		schema += schemaFiles[fileName] + "\n"
+	}
+
+	return schema, nil
 }
 
 func InitDatabase() (*sql.DB, error) {
@@ -45,82 +87,4 @@ func InitDatabase() (*sql.DB, error) {
 	}
 
 	return db, nil
-}
-
-func readMigrationsDir(path string) ([]string, error) {
-	files, err := os.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var migrationFiles []string
-	for _, file := range files {
-		if !file.IsDir() {
-			migrationFiles = append(migrationFiles, filepath.Join(path, file.Name()))
-		}
-	}
-
-	sort.Strings(migrationFiles)
-	return migrationFiles, nil
-}
-
-func schema() (string, error) {
-	schema := ""
-
-	migrationDirectories, err := sqlcMigrationDirs()
-	if err != nil {
-		return "", err
-	}
-
-	var files []string
-	for _, path := range migrationDirectories {
-		f, err := readMigrationsDir(path)
-		if err != nil {
-			return "", err
-		}
-
-		files = append(files, f...)
-	}
-
-	for _, file := range files {
-		content, err := os.ReadFile(file)
-		if err != nil {
-			return "", err
-		}
-		schema += string(content)
-	}
-
-	return schema, nil
-}
-
-func sqlcMigrationDirs() ([]string, error) {
-	sqlcFileName := "sqlc.yaml"
-	sqlcFilePath, err := filepath.Abs(sqlcFileName)
-	if err != nil {
-		return nil, err
-	}
-
-	yamlFile, err := os.ReadFile(sqlcFilePath)
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse yaml file
-	var config struct {
-		SQL []struct {
-			Schema string `yaml:"schema"`
-		} `yaml:"sql"`
-	}
-	err = yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		return nil, err
-	}
-
-	// Extract migration directories
-	var migrationDirectories []string
-	for _, item := range config.SQL {
-		migrationDirectories = append(migrationDirectories, filepath.Join(strings.TrimSuffix(sqlcFilePath, sqlcFileName), item.Schema))
-	}
-
-	return migrationDirectories, nil
 }

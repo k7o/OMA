@@ -7,8 +7,10 @@ import (
 
 type DecisionLogRepository interface {
 	decisionlogs.Querier
+	MigrationEmbed
 }
 
 type PlaygroundLogsRepository interface {
 	playgroundlogs.Querier
+	MigrationEmbed
 }

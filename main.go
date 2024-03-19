@@ -4,7 +4,7 @@ import (
 	"context"
 	"oma/app"
 	"oma/internal/config"
-	"oma/internal/db"
+	internalDb "oma/internal/db"
 	"oma/internal/decisionlogs"
 	"oma/internal/opa"
 	"oma/internal/playgroundlogs"
@@ -30,7 +30,7 @@ func main() {
 
 	zerolog.SetGlobalLevel(conf.LogLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	db, err := db.InitInMemoryDatabase(ctx)
+	db, err := internalDb.InitInMemoryDatabase(ctx)
 	if err != nil {
 		log.Fatal().Err(err).Msg("initializing database")
 	}
@@ -38,6 +38,11 @@ func main() {
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
 	opa := opa.New()
+
+	err = internalDb.Migrate(ctx, db, decisionLogRepository, playgroundLogRepository)
+	if err != nil {
+		log.Fatal().Err(err).Msg("migrating database")
+	}
 
 	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opa)
 	server := http.New(&conf.Transport.HTTP, app)
