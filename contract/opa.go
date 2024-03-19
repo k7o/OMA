@@ -5,7 +5,7 @@ import (
 )
 
 type Opa interface {
-	Eval(policy string, input string) (*models.EvalResult, error)
+	Eval(policy string, input string, options *models.EvalOptions) (*models.EvalResult, error)
 	Format(policy string) (string, error)
 	Lint(policy string) (string, []string, error)
 }

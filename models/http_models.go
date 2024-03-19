@@ -9,9 +9,14 @@ import (
 )
 
 type EvalRequest struct {
-	Policy string `json:"policy"`
-	Input  string `json:"input"`
-	Data   string `json:"data"`
+	Options EvalOptions `json:"options"`
+	Policy  string      `json:"policy"`
+	Input   string      `json:"input"`
+	Data    string      `json:"data"`
+}
+
+type EvalOptions struct {
+	Coverage bool `json:"coverage"`
 }
 
 type EvalResponse struct {

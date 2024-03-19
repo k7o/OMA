@@ -32,7 +32,7 @@ func New(conf *config.Config,
 }
 
 func (a *App) Eval(ctx context.Context, req *models.EvalRequest) (*models.EvalResponse, error) {
-	result, err := a.opa.Eval(req.Policy, req.Input)
+	result, err := a.opa.Eval(req.Policy, req.Input, &req.Options)
 	if err != nil {
 		return nil, err
 	}

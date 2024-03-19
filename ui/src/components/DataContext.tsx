@@ -8,6 +8,9 @@ function createInitialState() {
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
   const [localHistory, setLocalHistory] = createSignal<DecisionLog[]>([])
+  const [options, setOptions] = createSignal<EvalOptions>({
+    coverage: false,
+  })
 
   return {
     policy,
@@ -22,6 +25,8 @@ function createInitialState() {
     setCoverage,
     localHistory,
     setLocalHistory,
+    options,
+    setOptions,
   } as const
 }
 

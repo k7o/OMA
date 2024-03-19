@@ -23,6 +23,7 @@ export const Editor = () => {
     coverage,
     setCoverage,
     localHistory,
+    options
   } = useData()
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {

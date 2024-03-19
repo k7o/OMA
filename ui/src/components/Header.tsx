@@ -5,10 +5,20 @@ import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
-import { createSignal } from 'solid-js'
+import { createEffect } from 'solid-js'
 
 export const Header = () => {
-  const { data, input, policy, setPolicy, setOutput, setCoverage, setLocalHistory } = useData()
+  const {
+    data,
+    input,
+    policy,
+    setPolicy,
+    setOutput,
+    setCoverage,
+    setLocalHistory,
+    options,
+    setOptions,
+  } = useData()
 
   async function evaluate() {
     try {
@@ -18,6 +28,7 @@ export const Header = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          options: options(),
           data: data(),
           input: input(),
           policy: policy(),
@@ -39,7 +50,7 @@ export const Header = () => {
             setOutput(JSON.stringify(res.result, null, 2))
           }
 
-          if (res.coverage) {
+          if (res.coverage && options().coverage) {
             setCoverage(res.coverage)
           }
 
@@ -58,7 +69,7 @@ export const Header = () => {
         policy: policy(),
         input: input(),
         data: data(),
-        path: "",
+        path: '',
         result: JSON.stringify(evalResult, null, 2),
         timestamp: evalResult.timestamp,
       },
@@ -96,6 +107,10 @@ export const Header = () => {
     }
   }
 
+  createEffect(() => {
+    console.log(options())
+  })
+
   return (
     <header class="h-14 flex justify-between">
       <div class="items-center flex mx-2 ">
@@ -103,6 +118,16 @@ export const Header = () => {
         <h3 class="text-2xl hidden md:block">The Rego Playground</h3>
       </div>
       <div class="items-center flex">
+        <input
+          type="checkbox"
+          class="bg-blue-400 h-5 w-5"
+          id="coverage"
+          name="Coverage"
+          onChange={(e) => {
+            setOptions({ coverage: e.target.checked })
+          }}
+        />
+        <label class="text-base px-2">Coverage</label>
         <Button text="Evaluate" icon={PlayIcon} onClick={evaluate} />
         <Button text="Format" icon={FormatIcon} onClick={format} />
         <Button text="Publish" icon={PublishIcon} />

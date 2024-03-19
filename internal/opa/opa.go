@@ -24,7 +24,7 @@ func New() *Opa {
 	return &Opa{}
 }
 
-func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
+func (opa *Opa) Eval(policy string, input string, options *models.EvalOptions) (*models.EvalResult, error) {
 	// Write the module to a temporary file.
 	policyFile, cleanup, err := writeBytesToFile([]byte(policy), "rego")
 	defer cleanup()
@@ -38,8 +38,11 @@ func (opa *Opa) Eval(policy string, input string) (*models.EvalResult, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	output, err := cmd(fmt.Sprintf("eval -d %s -i %s --profile data --coverage", policyFile, inputFile))
+	cmdString := fmt.Sprintf("eval -d %s -i %s --profile data", policyFile, inputFile)
+	if options.Coverage {
+		cmdString += " --coverage"
+	}
+	output, err := cmd(cmdString)
 	if err != nil {
 		return nil, err
 	}

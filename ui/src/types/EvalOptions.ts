@@ -1,0 +1,3 @@
+type EvalOptions = {
+    coverage: boolean
+}
