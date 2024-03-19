@@ -87,3 +87,6 @@ jobs:
           platforms: ${{ matrix.os }}/${{ matrix.arch }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/oma:latest,${{ secrets.DOCKERHUB_USERNAME }}/oma:${{ github.ref_name }}
+          build-args: |
+            EXECUTABLE_NAME=oma-${{ matrix.os }}-${{ matrix.arch }}
+
