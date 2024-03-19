@@ -35,6 +35,15 @@ jobs:
   build-api:
     needs: build-ui
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          arch: [arm, arm64, amd64, 386]
+          os: [linux, darwin, freebsd, windows]
+          exclude:
+            - os: darwin
+              arch: arm
+            - os: darwin
+              arch: 386
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,7 +51,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '^1.16'
+          go-version: 1.22.1
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -51,7 +60,7 @@ jobs:
           path: ui/dist
 
       - name: Build Golang API
-        run: go build -o oma
+        run: env GOOS=${{matrix.os}} GOARCH=${{matrix.arch}} CGO_ENABLED=0 go build -o oma-${{matrix.os}}-${{matrix.arch}}
 
       - name: Upload API artifact
         uses: actions/upload-artifact@v2
@@ -62,4 +71,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: oma
+          files: oma-${{matrix.os}}-${{matrix.arch}}
+          name: 
