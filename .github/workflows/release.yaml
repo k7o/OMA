@@ -61,7 +61,7 @@ jobs:
           path: ui/dist
 
       - name: Build Golang API
-        run: env GOOS=${{matrix.os}} GOARCH=${{matrix.arch}} CGO_ENABLED=0 go build -o oma-${{matrix.os}}-${{matrix.arch}}
+        run: env GOOS=${{matrix.os}} GOARCH=${{matrix.arch}} CGO_ENABLED=1 go build -o oma-${{matrix.os}}-${{matrix.arch}}
 
       - name: Release
         uses: softprops/action-gh-release@v2
