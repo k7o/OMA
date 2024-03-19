@@ -65,8 +65,8 @@ jobs:
       - name: Upload API artifact
         uses: actions/upload-artifact@v2
         with:
-          name: oma
-          path: oma
+          name: oma-${{matrix.os}}-${{matrix.arch}}
+          path: oma-${{matrix.os}}-${{matrix.arch}}
 
       - name: Release
         uses: softprops/action-gh-release@v2
