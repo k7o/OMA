@@ -5,7 +5,6 @@ import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
-import { createEffect } from 'solid-js'
 
 export const Header = () => {
   const {
@@ -70,7 +69,7 @@ export const Header = () => {
         input: input(),
         data: data(),
         path: '',
-        result: JSON.stringify(evalResult, null, 2),
+        result: JSON.stringify(evalResult.result, null, 2),
         timestamp: evalResult.timestamp,
       },
       ...history,
@@ -108,7 +107,7 @@ export const Header = () => {
   }
 
   return (
-    <header class="h-14 flex justify-between">
+    <header class="h-14 min-h-14 flex justify-between">
       <div class="items-center flex mx-2 ">
         <img src={OpaIcon} id="opa-logo" alt="OPA logo" class="h-10" />
         <h3 class="text-2xl hidden md:block">The Rego Playground</h3>

@@ -7,10 +7,9 @@ import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
 import { DecisionLog } from '../types/DecisionLog'
 
-export const ListItem = (props: {
-  item: DecisionLog & { policy?: string }
-  previousItem?: DecisionLog & { policy?: string }
-}) => {
+type ListItemProps = DecisionLog & { policy?: string }
+
+export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
   const { setPolicy, setInput } = useData()
@@ -26,6 +25,7 @@ export const ListItem = (props: {
         >
           <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
         </Show>
+        <Status item={props.item} />
         <Show when={props.item.policy}>
           <button
             onClick={(e) => {
@@ -90,6 +90,48 @@ export const ListItem = (props: {
       </Show>
     </li>
   )
+}
+
+const StatusSpan = (props: { text: string; color: 'green' | 'red' | 'amber' }) => {
+  return (
+    <span class={`p-2 text-sm mx-2 rounded text-white bg-${props.color}-500`}>{props.text}</span>
+  )
+}
+
+const Status = (props: { item: ListItemProps }) => {
+  try {
+    const result = JSON.parse(props.item.result)
+    const allowed = findAllowedValue(result)
+    if (allowed === true) {
+      return <StatusSpan text="Allowed" color="green" />
+    } else if (allowed === false) {
+      return <StatusSpan text="Failure" color="red" />
+    } else if (result.errors) {
+      return <StatusSpan text="Error" color="amber" />
+    }
+  } catch {}
+
+  return
+}
+
+const findAllowedValue = (data: any): any => {
+  console.log('findAllowedValue', data)
+  if (typeof data === 'object' && data !== null) {
+    if ('allowed' in data) {
+      return data.allowed
+    } else if ('allow' in data) {
+      return data.allow
+    } else {
+      for (const key in data) {
+        const value = findAllowedValue(data[key])
+        if (value !== undefined) {
+          return value
+        }
+      }
+    }
+  }
+
+  return undefined
 }
 
 const Tabs = ['Input', 'Policy', 'Result'] as const
