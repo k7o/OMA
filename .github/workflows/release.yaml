@@ -63,7 +63,7 @@ jobs:
         run: env GOOS=${{matrix.os}} GOARCH=${{matrix.arch}} CGO_ENABLED=0 go build -o oma-${{matrix.os}}-${{matrix.arch}}
 
       - name: Upload API artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: oma-${{matrix.os}}-${{matrix.arch}}
           path: oma-${{matrix.os}}-${{matrix.arch}}
