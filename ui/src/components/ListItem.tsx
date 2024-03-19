@@ -14,6 +14,8 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
   const [tab, setTab] = createSignal<Tabs>('Input')
   const { setPolicy, setInput } = useData()
 
+  console.log(props.item)
+
   return (
     <li
       class={`py-3 hover:bg-gray-50 flex relative overflow-y-scroll flex-col ${open() && 'h-full'}`}
@@ -93,9 +95,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
 }
 
 const StatusSpan = (props: { text: string; class: string }) => {
-  return (
-    <span class={`p-2 text-sm mx-2 rounded text-white ${props.class}`}>{props.text}</span>
-  )
+  return <span class={`p-2 text-sm mx-2 rounded text-white ${props.class}`}>{props.text}</span>
 }
 
 const Status = (props: { item: ListItemProps }) => {
@@ -106,7 +106,8 @@ const Status = (props: { item: ListItemProps }) => {
       return <StatusSpan text="Allowed" class="bg-green-500" />
     } else if (allowed === false) {
       return <StatusSpan text="Failure" class="bg-red-500" />
-    } else if (result.errors) {
+    } else if (props.item.result === "null" || result.errors) {
+      console.log('case')
       return <StatusSpan text="Error" class="bg-amber-500" />
     }
   } catch {}
@@ -115,7 +116,6 @@ const Status = (props: { item: ListItemProps }) => {
 }
 
 const findAllowedValue = (data: any): any => {
-  console.log('findAllowedValue', data)
   if (typeof data === 'object' && data !== null) {
     if ('allowed' in data) {
       return data.allowed
