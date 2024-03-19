@@ -36,14 +36,14 @@ jobs:
     needs: build-ui
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-          arch: [arm, arm64, amd64, 386]
-          os: [linux, darwin, freebsd, windows]
-          exclude:
-            - os: darwin
-              arch: arm
-            - os: darwin
-              arch: 386
+      matrix:
+        arch: [arm, arm64, amd64, 386]
+        os: [linux, darwin, freebsd, windows]
+        exclude:
+          - os: darwin
+            arch: arm
+          - os: darwin
+            arch: 386
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,14 +62,27 @@ jobs:
       - name: Build Golang API
         run: env GOOS=${{matrix.os}} GOARCH=${{matrix.arch}} CGO_ENABLED=0 go build -o oma-${{matrix.os}}-${{matrix.arch}}
 
-      - name: Upload API artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: oma-${{matrix.os}}-${{matrix.arch}}
-          path: oma-${{matrix.os}}-${{matrix.arch}}
-
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: oma-${{matrix.os}}-${{matrix.arch}}
-          name: 
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: ${{ matrix.os }}/${{ matrix.arch }}
+          push: true
+          tags: pietervdwerk/oma:latest, pietervdwerk/oma:${{ github.event.release.tag_name }} }}
