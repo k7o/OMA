@@ -6,17 +6,20 @@ import PlayIcon from './assets/play.png'
 import LogsIcon from './assets/logs.svg'
 import { JSX } from 'solid-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
+import { DataProvider } from './components/DataContext'
 
 const queryClient = new QueryClient()
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <Route path="/" component={() => <Navigate href="/play" />} />
-        <Route path="/play" component={Page(Playground)} />
-        <Route path="/decision-logs" component={Page(DecisionLogs)} />
-      </Router>
+      <DataProvider>
+        <Router>
+          <Route path="/" component={() => <Navigate href="/play" />} />
+          <Route path="/play" component={Page(Playground)} />
+          <Route path="/decision-logs" component={Page(DecisionLogs)} />
+        </Router>
+      </DataProvider>
     </QueryClientProvider>
   )
 }

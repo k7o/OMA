@@ -1,5 +1,7 @@
 import { createSignal, createContext, useContext, JSX } from 'solid-js'
 import { DecisionLog } from '../types/DecisionLog'
+import { createStore } from 'solid-js/store'
+import { makePersisted } from '@solid-primitives/storage'
 
 function createInitialState() {
   const [policy, setPolicy] = createSignal(defaultPolicy)
@@ -11,6 +13,15 @@ function createInitialState() {
   const [options, setOptions] = createSignal<EvalOptions>({
     coverage: false,
   })
+
+  const [applicationSettings, setApplicationSettings] = makePersisted(
+    createStore<ApplicationSettings>(
+      {
+        OpaServerUrl: 'http://localhost:8181',
+      },
+      { name: 'createInitialState' },
+    ),
+  )
 
   return {
     policy,
@@ -27,6 +38,8 @@ function createInitialState() {
     setLocalHistory,
     options,
     setOptions,
+    applicationSettings,
+    setApplicationSettings,
   } as const
 }
 
