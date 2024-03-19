@@ -92,9 +92,9 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
   )
 }
 
-const StatusSpan = (props: { text: string; color: 'green' | 'red' | 'amber' }) => {
+const StatusSpan = (props: { text: string; class: string }) => {
   return (
-    <span class={`p-2 text-sm mx-2 rounded text-white bg-${props.color}-500`}>{props.text}</span>
+    <span class={`p-2 text-sm mx-2 rounded text-white ${props.class}`}>{props.text}</span>
   )
 }
 
@@ -103,11 +103,11 @@ const Status = (props: { item: ListItemProps }) => {
     const result = JSON.parse(props.item.result)
     const allowed = findAllowedValue(result)
     if (allowed === true) {
-      return <StatusSpan text="Allowed" color="green" />
+      return <StatusSpan text="Allowed" class="bg-green-500" />
     } else if (allowed === false) {
-      return <StatusSpan text="Failure" color="red" />
+      return <StatusSpan text="Failure" class="bg-red-500" />
     } else if (result.errors) {
-      return <StatusSpan text="Error" color="amber" />
+      return <StatusSpan text="Error" class="bg-amber-500" />
     }
   } catch {}
 
