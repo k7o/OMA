@@ -15,8 +15,6 @@ export const ListItem = (props: {
   const [tab, setTab] = createSignal<Tabs>('Input')
   const { setPolicy, setInput } = useData()
 
-  console.log('list item', props.item)
-
   return (
     <li
       class={`py-3 hover:bg-gray-50 flex relative overflow-y-scroll flex-col ${open() && 'h-full'}`}

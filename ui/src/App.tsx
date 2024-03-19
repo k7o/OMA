@@ -5,14 +5,19 @@ import { DecisionLogs } from './pages/DecisionLogs'
 import PlayIcon from './assets/play.png'
 import LogsIcon from './assets/logs.svg'
 import { JSX } from 'solid-js'
+import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
+
+const queryClient = new QueryClient()
 
 const App = () => {
   return (
-    <Router>
-      <Route path='/' component={() => <Navigate href='/play' />} />
-      <Route path='/play' component={Page(Playground)} />
-      <Route path='/decision-logs' component={Page(DecisionLogs)} />
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Route path="/" component={() => <Navigate href="/play" />} />
+        <Route path="/play" component={Page(Playground)} />
+        <Route path="/decision-logs" component={Page(DecisionLogs)} />
+      </Router>
+    </QueryClientProvider>
   )
 }
 
@@ -20,12 +25,12 @@ export default App
 
 const Page = (children: () => JSX.Element) => {
   return () => (
-    <div class='flex flex-row w-full h-full'>
-      <div class='w-14 bg-[#eee] pt-16'>
-        <SidebarItem href='/play' icon={PlayIcon} text='Play' />
-        <SidebarItem href='/decision-logs' icon={LogsIcon} text='Logs' />
+    <div class="flex flex-row w-full h-full">
+      <div class="w-14 bg-[#eee] pt-16">
+        <SidebarItem href="/play" icon={PlayIcon} text="Play" />
+        <SidebarItem href="/decision-logs" icon={LogsIcon} text="Logs" />
       </div>
-      <div class='w-screen h-screen flex flex-col'>{children()}</div>
+      <div class="w-screen h-screen flex flex-col">{children()}</div>
     </div>
   )
 }
@@ -38,11 +43,8 @@ type SidebarItemProps = {
 
 const SidebarItem = ({ href, icon, text }: SidebarItemProps) => {
   return (
-    <A
-      href={href}
-      class='flex flex-col my-4 items-center border-2 text-sm font-thin'
-    >
-      <img src={icon} alt={text} class='w-8 h-8 stroke-white' />
+    <A href={href} class="flex flex-col my-4 items-center border-2 text-sm font-thin">
+      <img src={icon} alt={text} class="w-8 h-8 stroke-white" />
       {text}
     </A>
   )

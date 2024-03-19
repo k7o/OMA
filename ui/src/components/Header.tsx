@@ -107,10 +107,6 @@ export const Header = () => {
     }
   }
 
-  createEffect(() => {
-    console.log(options())
-  })
-
   return (
     <header class="h-14 flex justify-between">
       <div class="items-center flex mx-2 ">
