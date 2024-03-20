@@ -36,8 +36,8 @@ export const DecisionLogs = () => {
             <label>OPA Server URL </label>
             <input
               class="mr-2 border-2"
-              onChange={(e) => setApplicationSettings('OpaServerUrl', e.currentTarget.value)}
-              value={applicationSettings.OpaServerUrl}
+              onChange={(e) => setApplicationSettings('opa_server_url', e.currentTarget.value)}
+              value={applicationSettings.opa_server_url}
             />
           </div>
         </Show>

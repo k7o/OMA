@@ -13,6 +13,8 @@ type App interface {
 	Lint(ctx context.Context, req *models.LintRequest) (*models.LintResponse, error)
 	TestAll(ctx context.Context, req *models.EvalRequest) (*models.TestAllResponse, error)
 
+	DownloadBundle(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadBundleResponse, error)
+
 	PlaygroundLogs(ctx context.Context) ([]playgroundlogs.PlaygroundLog, error)
 
 	PushDecisionLogs(ctx context.Context, req *models.DecisionLogRequest) error

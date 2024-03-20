@@ -17,8 +17,8 @@ function createInitialState() {
   const [applicationSettings, setApplicationSettings] = makePersisted(
     createStore<ApplicationSettings>(
       {
-        OpaServerUrl: 'http://localhost:8181',
-        BundleServerUrl: 'https://gitlab.com/api/v4/projects/55642500/packages/generic/bundle',
+        opa_server_url: 'http://localhost:8181',
+        bundle_server_url: 'https://gitlab.com/api/v4/projects/55642500/packages/generic/bundle',
       },
       { name: 'createInitialState' },
     ),
