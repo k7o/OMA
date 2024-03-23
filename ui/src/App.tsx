@@ -28,12 +28,12 @@ export default App
 
 const Page = (children: () => JSX.Element) => {
   return () => (
-    <div class="flex flex-row w-full h-full">
-      <div class="w-14 bg-[#eee] pt-16">
+    <div class="flex w-screen h-screen">
+      <div class="min-w-14 bg-[#eee] pt-16">
         <SidebarItem href="/play" icon={PlayIcon} text="Play" />
         <SidebarItem href="/decision-logs" icon={LogsIcon} text="Logs" />
       </div>
-      <div class="w-screen h-screen flex flex-col">{children()}</div>
+      <div class="w-full">{children()}</div>
     </div>
   )
 }

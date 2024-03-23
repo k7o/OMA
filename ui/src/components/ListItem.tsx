@@ -17,7 +17,7 @@ type Tabs = (typeof Tabs)[number]
 export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
-  const { setInput } = useData()
+  const { setInput, setBundle } = useData()
 
   return (
     <li
@@ -35,6 +35,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
           <button
             onClick={(e) => {
               setInput(props.item.input)
+              setBundle(props.item.bundle!)
               e.stopPropagation()
             }}
             class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"

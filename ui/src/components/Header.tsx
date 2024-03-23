@@ -5,7 +5,6 @@ import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
-import { unwrap } from 'solid-js/store'
 
 export const Header = () => {
   const {
@@ -60,7 +59,7 @@ export const Header = () => {
           setLocalHistory((history) => [
             {
               decision_id: evalResult.id,
-              bundle: unwrap(bundle),
+              bundle: JSON.parse(JSON.stringify(bundle)),
               input: input(),
               data: data(),
               path: '',
@@ -107,7 +106,7 @@ export const Header = () => {
   }
 
   return (
-    <header class="h-14 min-h-14 flex justify-between">
+    <header class="h-14 w-full min-h-14 flex justify-between">
       <div class="items-center flex mx-2 ">
         <img src={OpaIcon} id="opa-logo" alt="OPA logo" class="h-10" />
         <h3 class="text-2xl hidden md:block">The Rego Playground</h3>

@@ -107,49 +107,53 @@ export const Editor = () => {
     <div class="flex h-full w-full">
       <SplitPane gutterClass="gutter gutter-horizontal" sizes={[70, 30]}>
         <div>
-          <SplitPane
-            gutterClass="gutter gutter-vertical relative"
-            direction="vertical"
-            sizes={[60, 40]}
-          >
-            <div class="flex h-full relative w-full">
-              <div class="h-full border-r-2">
-                <h3 class="bg-gray-400 text-white px-2 relative">FILES</h3>
-                <ul class="h-full w-80 whitespace-nowrap mt-2">
-                  <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
-                    {(file) => (
-                      <li
-                        class={`px-4 py-1 border-spacing-1 m-2 rounded hover:bg-slate-300 bg-slate-200 ${editingPolicy() === file && 'bg-slate-400'}`}
-                        onClick={() => setEditingPolicy(file)}
-                      >
-                        {file}
-                      </li>
-                    )}
-                  </For>
-                </ul>
-              </div>
-              <div class="h-full w-full">
-                <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
-                <MonacoEditor
-                  class="w-full h-full relative"
-                  language="rego"
-                  value={bundle[editingPolicy()]}
-                  onChange={(value) => {
-                    setCoverage()
-                    lint()
-                    setBundle(editingPolicy(), value)
-                  }}
-                  onMount={(monaco, editor) => {
-                    setPolicyInstance({ monaco, editor })
-                  }}
-                  options={{
-                    scrollBeyondLastLine: false,
-                    wordWrap: 'on',
-                  }}
-                />
-              </div>
+          <SplitPane gutterClass="gutter gutter-vertical" direction="vertical" sizes={[60, 40]}>
+            <div class="flex flex-wrap">
+              <SplitPane
+                direction="horizontal"
+                gutterClass="gutter gutter-horizontal"
+                sizes={[35, 65]}
+              >
+                <div class="flex flex-col h-full w-full overflow-y-scroll">
+                  <h3 class="bg-gray-400 text-white px-2">FILES</h3>
+                  <ul class="h-full mt-2">
+                    <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
+                      {(file) => (
+                        <li
+                          class={`px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-slate-200 ${
+                            editingPolicy() === file && 'bg-slate-400'
+                          }`}
+                          onClick={() => setEditingPolicy(file)}
+                        >
+                          {file}
+                        </li>
+                      )}
+                    </For>
+                  </ul>
+                </div>
+                <div class="flex flex-col h-full w-full flex-grow">
+                  <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
+                  <MonacoEditor
+                    class="w-full h-full relative"
+                    language="rego"
+                    value={bundle[editingPolicy()]}
+                    onChange={(value) => {
+                      setCoverage()
+                      lint()
+                      setBundle(editingPolicy(), value)
+                    }}
+                    onMount={(monaco, editor) => {
+                      setPolicyInstance({ monaco, editor })
+                    }}
+                    options={{
+                      scrollBeyondLastLine: false,
+                      wordWrap: 'on',
+                    }}
+                  />
+                </div>
+              </SplitPane>
             </div>
-            <div class="relative">
+            <div class="flex flex-col relative">
               <h3 class="bg-gray-400 text-white px-2 relative">HISTORY</h3>
               <ul class="h-full">
                 <For fallback={<li class="px-2 pt-4">No history</li>} each={localHistory()}>
@@ -165,16 +169,17 @@ export const Editor = () => {
             </div>
           </SplitPane>
         </div>
+        {/* <div class="flex flex-col flex-wrap"> */}
         <div>
           <SplitPane
             direction="vertical"
             gutterClass="gutter gutter-vertical relative"
             sizes={[40, 20, 20, 20]}
           >
-            <div class="flex flex-col">
-              <h3 class="bg-gray-400 text-white px-2 relative over">INPUT</h3>
+            <div class="flex flex-col h-full w-full">
+              <h3 class="bg-gray-400 text-white px-2">INPUT</h3>
               <MonacoEditor
-                class="w-full h-full relative overflow-hidden"
+                class="w-full h-full relative"
                 language="json"
                 value={input()}
                 onChange={(value) => {
