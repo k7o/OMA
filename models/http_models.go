@@ -1,8 +1,6 @@
 package models
 
 import (
-	"log"
-	"strings"
 	"time"
 
 	"github.com/dgryski/trifles/uuid"
@@ -10,7 +8,7 @@ import (
 
 type EvalRequest struct {
 	Options EvalOptions `json:"options"`
-	Policy  string      `json:"policy"`
+	Bundle  Bundle      `json:"bundle"`
 	Input   string      `json:"input"`
 	Data    string      `json:"data"`
 }
@@ -85,10 +83,10 @@ type DecisionLogRequestItem struct {
 	ReqID int `json:"req_id"`
 }
 
-func (result *EvalResult) MakeEvalResponse(policy string) *EvalResponse {
+func (result *EvalResult) MakeEvalResponse(bundle *Bundle) *EvalResponse {
 	return &EvalResponse{
 		Id:     uuid.UUIDv4(),
-		Result: makeResult(result, policy),
+		Result: makeResult(result),
 		Errors: result.Errors,
 		Coverage: CoverageResponse{
 			Covered:      makeCoverage(result.Coverage.Files),
@@ -112,7 +110,7 @@ func makeCoverage(files map[string]Coverage) []Covered {
 	return covered
 }
 
-func makeResult(result *EvalResult, policy string) interface{} {
+func makeResult(result *EvalResult) interface{} {
 	if len(result.Result) == 0 {
 		return nil
 	} else if result.Result[0].Expressions == nil {
@@ -121,26 +119,5 @@ func makeResult(result *EvalResult, policy string) interface{} {
 		return nil
 	}
 
-	lines := strings.Split(policy, "\n")
-	packageNesting := []string{}
-	if len(lines) > 0 {
-		if strings.HasPrefix(lines[0], "package ") {
-			packageNesting = strings.Split(strings.TrimPrefix(lines[0], "package "), ".")
-		}
-	}
-
-	return getPackageResult(result.Result[0].Expressions[0].Value, packageNesting)
-}
-
-func getPackageResult(result interface{}, splits []string) interface{} {
-	if len(splits) == 0 {
-		return result
-	}
-
-	if resultMap, ok := result.(map[string]interface{}); ok {
-		return getPackageResult(resultMap[splits[0]], splits[1:])
-	}
-
-	log.Fatalf("Expected map[string]interface{} but got %T", result)
-	return nil
+	return result.Result[0].Expressions[0].Value
 }

@@ -38,7 +38,7 @@ func (s *Server) Run() error {
 		r.Post("/format", s.format)
 		r.Post("/lint", s.lint)
 		r.Get("/test-all", s.testAll)
-		r.Get("/download", s.download)
+		r.Post("/download", s.download)
 	})
 
 	router.Route("/api/decision-log", func(r chi.Router) {

@@ -10,12 +10,5 @@ type ApplicationSettings struct {
 }
 
 type DownloadBundleResponse struct {
-	Files map[string]string `json:"files"`
-}
-
-type Bundle struct {
-	Files map[string]struct {
-		FileValue string `json:"file_value"`
-		Files     Bundle `json:"files"`
-	}
+	Files Bundle `json:"files"`
 }

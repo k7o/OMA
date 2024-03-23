@@ -10,8 +10,9 @@ export const Header = () => {
   const {
     data,
     input,
-    policy,
-    setPolicy,
+    bundle,
+    editingPolicy,
+    setBundle,
     setOutput,
     setCoverage,
     setLocalHistory,
@@ -30,50 +31,48 @@ export const Header = () => {
           options: options(),
           data: data(),
           input: input(),
-          policy: policy(),
+          bundle: bundle,
         }),
       })
 
       if (!res.ok) {
         setOutput(await res.text())
       } else {
-        res.json().then((res: EvalResult) => {
-          if (res.errors) {
-            let output = `${res.errors.length} error${res.errors.length > 1 ? 's' : ''} occurred:\n`
-            res.errors.forEach((err) => {
+        res.json().then((evalResult: EvalResult) => {
+          if (evalResult.errors) {
+            let output = `${evalResult.errors.length} error${
+              evalResult.errors.length > 1 ? 's' : ''
+            } occurred:\n`
+            evalResult.errors.forEach((err) => {
               output += `policy.rego:${err.location.row}:${err.code} ${err.message}\n`
             })
 
             setOutput(output)
           } else {
-            setOutput(JSON.stringify(res.result, null, 2))
+            setOutput(JSON.stringify(evalResult.result, null, 2))
           }
 
-          if (res.coverage && options().coverage) {
-            setCoverage(res.coverage)
+          if (evalResult.coverage && options().coverage) {
+            setCoverage(evalResult.coverage)
           }
 
-          pushHistory(res)
+          setLocalHistory((history) => [
+            {
+              decision_id: evalResult.id,
+              bundle: bundle,
+              input: input(),
+              data: data(),
+              path: '',
+              result: JSON.stringify(evalResult.result, null, 2),
+              timestamp: evalResult.timestamp,
+            },
+            ...history,
+          ])
         })
       }
     } catch (e) {
       console.error(e)
     }
-  }
-
-  function pushHistory(evalResult: EvalResult) {
-    setLocalHistory((history) => [
-      {
-        decision_id: evalResult.id,
-        policy: policy(),
-        input: input(),
-        data: data(),
-        path: '',
-        result: JSON.stringify(evalResult.result, null, 2),
-        timestamp: evalResult.timestamp,
-      },
-      ...history,
-    ])
   }
 
   async function format() {
@@ -84,12 +83,12 @@ export const Header = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          policy: policy(),
+          policy: bundle,
         }),
       })
 
       if (res.ok) {
-        let json: FormatResponse = { formatted: policy() }
+        let json: FormatResponse = { formatted: bundle[editingPolicy()] }
         try {
           json = (await res.json()) as FormatResponse
         } catch (e) {
@@ -97,7 +96,7 @@ export const Header = () => {
           setOutput(await res.text())
         }
 
-        setPolicy(json.formatted)
+        setBundle(editingPolicy(), json.formatted)
       } else {
         setOutput(await res.text())
       }

@@ -1,10 +1,13 @@
-import { createSignal, createContext, useContext, JSX } from 'solid-js'
+import { createSignal, createContext, useContext, JSX, onMount } from 'solid-js'
 import { DecisionLog } from '../types/DecisionLog'
 import { createStore } from 'solid-js/store'
 import { makePersisted } from '@solid-primitives/storage'
 
 function createInitialState() {
-  const [policy, setPolicy] = createSignal(defaultPolicy)
+  const [bundle, setBundle] = createStore<Bundle>({
+    'policy.rego': defaultPolicy,
+  })
+  const [editingPolicy, setEditingPolicy] = createSignal<string>(Object.keys(bundle)[0])
   const [input, setInput] = createSignal(defaultInput)
   const [data, setData] = createSignal('')
   const [output, setOutput] = createSignal('')
@@ -24,9 +27,23 @@ function createInitialState() {
     ),
   )
 
+  onMount(() => {
+    fetch('http://localhost:8080/api/download', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ application_settings: applicationSettings }),
+    })
+      .then((res) => res.json())
+      .then((data) => setBundle(() => data.files))
+  })
+
   return {
-    policy,
-    setPolicy,
+    bundle,
+    setBundle,
+    editingPolicy,
+    setEditingPolicy,
     input,
     setInput,
     data,

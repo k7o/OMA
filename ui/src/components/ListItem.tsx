@@ -1,4 +1,4 @@
-import { Accessor, For, Match, Setter, Show, Switch, createSignal } from 'solid-js'
+import { Accessor, For, JSX, Match, Setter, Show, Switch, children, createSignal } from 'solid-js'
 import ChevronRight from '../assets/chevron-right.svg'
 import ChevronDown from '../assets/chevron-down.svg'
 import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
@@ -7,14 +7,17 @@ import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
 import { DecisionLog } from '../types/DecisionLog'
 
-type ListItemProps = DecisionLog & { policy?: string }
+type ListItemProps = DecisionLog & {
+  bundle?: Bundle
+}
+
+const Tabs = ['Input', 'Bundle', 'Result'] as const
+type Tabs = (typeof Tabs)[number]
 
 export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
-  const { setPolicy, setInput } = useData()
-
-  console.log(props.item)
+  const { setInput } = useData()
 
   return (
     <li
@@ -28,11 +31,10 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
           <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
         </Show>
         <Status item={props.item} />
-        <Show when={props.item.policy}>
+        <Show when={props.item.bundle}>
           <button
             onClick={(e) => {
               setInput(props.item.input)
-              setPolicy(props.item.policy!)
               e.stopPropagation()
             }}
             class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
@@ -45,7 +47,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
       </div>
 
       <Show when={open()}>
-        <TabBar tab={tab} setTab={setTab} hasPolicy={props.item.policy !== undefined} />
+        <TabBar tab={tab} setTab={setTab} hasPolicy={props.item.bundle !== undefined} />
         <Switch
           fallback={
             <Match when={tab() === 'Input'}>
@@ -79,18 +81,51 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
               language="json"
             />
           </Match>
-          <Show when={() => tab() === 'Policy' && props.item.policy !== undefined}>
-            <Match when={tab() === 'Policy'}>
-              <SmallEditor
-                value={props.item.policy!}
-                previousValue={props.previousItem?.policy}
-                language="rego"
-              />
+          <Show when={() => tab() === 'Bundle' && props.item.bundle !== undefined}>
+            <Match when={tab() === 'Bundle'}>
+              <BundleBar bundle={props.item.bundle!}>
+                {([filename, content]) => (
+                  <SmallEditor
+                    value={props.item.bundle![filename]}
+                    previousValue={props.previousItem?.bundle?.[filename]}
+                    language="rego"
+                  />
+                )}
+              </BundleBar>
             </Match>
           </Show>
         </Switch>
       </Show>
     </li>
+  )
+}
+
+const BundleBar = (props: {
+  bundle: Bundle
+  children: (props: [filename: string, content: string]) => JSX.Element
+}) => {
+  const [bundleFile, setBundleFile] = createSignal(Object.keys(props.bundle)[0])
+
+  return (
+    <>
+      <div class="flex mt-2 w-full bg-gray-100">
+        <For each={Object.keys(props.bundle)}>
+          {(tab, index) => {
+            return (
+              <button
+                class={`${index() !== 0 && 'ml-2'} px-4 py- rounded-xl ${
+                  bundleFile() === tab ? 'bg-gray-200' : 'bg-gray-100'
+                }`}
+                onClick={() => setBundleFile(tab)}
+              >
+                {tab}
+              </button>
+            )
+          }}
+        </For>
+      </div>
+      ({props.children([bundleFile(), props.bundle[bundleFile()]])})
+    </>
   )
 }
 
@@ -106,7 +141,7 @@ const Status = (props: { item: ListItemProps }) => {
       return <StatusSpan text="Allowed" class="bg-green-500" />
     } else if (allowed === false) {
       return <StatusSpan text="Failure" class="bg-red-500" />
-    } else if (props.item.result === "null" || result.errors) {
+    } else if (props.item.result === 'null' || result.errors) {
       console.log('case')
       return <StatusSpan text="Error" class="bg-amber-500" />
     }
@@ -134,9 +169,6 @@ const findAllowedValue = (data: any): any => {
   return undefined
 }
 
-const Tabs = ['Input', 'Policy', 'Result'] as const
-type Tabs = (typeof Tabs)[number]
-
 type TabBarProps = {
   hasPolicy: boolean
   tab: Accessor<Tabs>
@@ -148,7 +180,7 @@ const TabBar = (props: TabBarProps) => {
     <div class="flex mt-2 w-full bg-gray-100">
       <For each={Tabs}>
         {(tab, index) => {
-          if (tab === 'Policy' && !props.hasPolicy) {
+          if (tab === 'Bundle' && !props.hasPolicy) {
             return null
           }
 

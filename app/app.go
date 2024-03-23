@@ -32,12 +32,12 @@ func New(conf *config.Config,
 }
 
 func (a *App) Eval(ctx context.Context, req *models.EvalRequest) (*models.EvalResponse, error) {
-	result, err := a.opa.Eval(req.Policy, req.Input, &req.Options)
+	result, err := a.opa.Eval(&req.Bundle, req.Input, &req.Options)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := result.MakeEvalResponse(req.Policy)
+	resp := result.MakeEvalResponse(&req.Bundle)
 	resultJson, err := json.Marshal(resp.Result)
 	if err != nil {
 		return nil, errors.New("failed to marshal result to json")
@@ -48,11 +48,16 @@ func (a *App) Eval(ctx context.Context, req *models.EvalRequest) (*models.EvalRe
 		return nil, errors.New("failed to marshal coverage to json")
 	}
 
+	bundleJson, err := json.Marshal(req.Bundle)
+	if err != nil {
+		return nil, errors.New("failed to marshal bundle to json")
+	}
+
 	_, err = a.playgroundLogsRepository.CreatePlaygroundLog(ctx, playgroundlogs.CreatePlaygroundLogParams{
 		ID:        resp.Id,
 		Input:     req.Input,
-		Policy:    req.Policy,
 		Timestamp: resp.Timestamp,
+		Policy:    string(bundleJson),
 		Result:    string(resultJson),
 		Coverage:  string(coverageJson),
 	})
@@ -97,7 +102,7 @@ func (a *App) TestAll(ctx context.Context, req *models.EvalRequest) (*models.Tes
 	results := make([]models.EvalResponse, 0, len(decisionLogs))
 	for _, decisionLog := range decisionLogs {
 		evalResponse, err := a.Eval(ctx, &models.EvalRequest{
-			Policy: req.Policy,
+			Bundle: req.Bundle,
 			Input:  decisionLog.Input,
 			Options: models.EvalOptions{
 				Coverage: false,

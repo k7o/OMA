@@ -15,16 +15,18 @@ export const Editor = () => {
   const {
     data,
     input,
-    policy,
+    bundle,
+    editingPolicy,
     setData,
     setInput,
-    setPolicy,
+    setBundle,
+    setEditingPolicy,
     output,
     coverage,
     setCoverage,
     localHistory,
-    options
   } = useData()
+
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
       const res = await fetch('http://localhost:8080/api/lint', {
@@ -32,7 +34,7 @@ export const Editor = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ policy: policy() }),
+        body: JSON.stringify({ policy: bundle[editingPolicy()] }),
       })
 
       if (res.ok) {
@@ -103,32 +105,49 @@ export const Editor = () => {
 
   return (
     <div class="flex h-full w-full">
-      <SplitPane gutterClass="gutter gutter-horizontal">
+      <SplitPane gutterClass="gutter gutter-horizontal" sizes={[70, 30]}>
         <div>
           <SplitPane
             gutterClass="gutter gutter-vertical relative"
             direction="vertical"
             sizes={[60, 40]}
           >
-            <div>
-              <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
-              <MonacoEditor
-                class="w-full h-full relative"
-                language="rego"
-                value={policy()}
-                onChange={(value) => {
-                  setCoverage()
-                  lint()
-                  setPolicy(value)
-                }}
-                onMount={(monaco, editor) => {
-                  setPolicyInstance({ monaco, editor })
-                }}
-                options={{
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                }}
-              />
+            <div class="flex h-full relative w-full">
+              <div class="h-full border-r-2">
+                <h3 class="bg-gray-400 text-white px-2 relative">FILES</h3>
+                <ul class="h-full w-80 whitespace-nowrap mt-2">
+                  <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
+                    {(file) => (
+                      <li
+                        class="px-4 py-1 border-spacing-1 m-2 rounded hover:bg-slate-300 bg-slate-200"
+                        onClick={() => setEditingPolicy(file)}
+                      >
+                        {file}
+                      </li>
+                    )}
+                  </For>
+                </ul>
+              </div>
+              <div class="h-full w-full">
+                <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
+                <MonacoEditor
+                  class="w-full h-full relative"
+                  language="rego"
+                  value={bundle[editingPolicy()]}
+                  onChange={(value) => {
+                    setCoverage()
+                    lint()
+                    setBundle(editingPolicy(), value)
+                  }}
+                  onMount={(monaco, editor) => {
+                    setPolicyInstance({ monaco, editor })
+                  }}
+                  options={{
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                  }}
+                />
+              </div>
             </div>
             <div class="relative">
               <h3 class="bg-gray-400 text-white px-2 relative">HISTORY</h3>
@@ -152,7 +171,7 @@ export const Editor = () => {
             gutterClass="gutter gutter-vertical relative"
             sizes={[40, 20, 20, 20]}
           >
-            <div class='flex flex-col'>
+            <div class="flex flex-col">
               <h3 class="bg-gray-400 text-white px-2 relative over">INPUT</h3>
               <MonacoEditor
                 class="w-full h-full relative overflow-hidden"
@@ -165,6 +184,10 @@ export const Editor = () => {
                 options={{
                   scrollBeyondLastLine: false,
                   wordWrap: 'on',
+                  minimap: { enabled: false },
+                  autoIndent: 'full',
+                  autoClosingBrackets: 'always',
+                  folding: true,
                 }}
               />
             </div>

@@ -24,9 +24,14 @@ func New() *Opa {
 	return &Opa{}
 }
 
-func (opa *Opa) Eval(policy string, input string, options *models.EvalOptions) (*models.EvalResult, error) {
-	// Write the module to a temporary file.
-	policyFile, cleanup, err := writeBytesToFile([]byte(policy), "rego")
+func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOptions) (*models.EvalResult, error) {
+	buf, err := bundle.TarGz()
+	if err != nil {
+		return nil, err
+	}
+
+	// Write the bundle to a temporary file.
+	bundleFile, cleanup, err := writeBytesToFile(buf.Bytes(), "tar.gz")
 	defer cleanup()
 	if err != nil {
 		return nil, err
@@ -38,7 +43,7 @@ func (opa *Opa) Eval(policy string, input string, options *models.EvalOptions) (
 	if err != nil {
 		return nil, err
 	}
-	cmdString := fmt.Sprintf("eval -d %s -i %s --profile data", policyFile, inputFile)
+	cmdString := fmt.Sprintf("eval -b %s -i %s --profile data", bundleFile, inputFile)
 	if options.Coverage {
 		cmdString += " --coverage"
 	}
