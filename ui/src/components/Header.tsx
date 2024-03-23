@@ -5,6 +5,7 @@ import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
+import { unwrap } from 'solid-js/store'
 
 export const Header = () => {
   const {
@@ -59,7 +60,7 @@ export const Header = () => {
           setLocalHistory((history) => [
             {
               decision_id: evalResult.id,
-              bundle: bundle,
+              bundle: unwrap(bundle),
               input: input(),
               data: data(),
               path: '',
