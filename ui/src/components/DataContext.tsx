@@ -38,11 +38,11 @@ function createInitialState() {
       .then((res) => res.json())
       .then((data) => {
         setBundle(reconcile(data.files))
-
-        const firstKey =
-          Object.keys(data.files).find((key) => key.endsWith('.rego')) || Object.keys(data.files)[0]
-
-        setEditingPolicy(firstKey)
+        // Set current editing policy to the first policy file or the first file if there are no policy files.
+        setEditingPolicy(
+          Object.keys(data.files).find((key) => key.endsWith('.rego')) ||
+            Object.keys(data.files)[0],
+        )
       })
   })
 
