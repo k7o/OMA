@@ -142,7 +142,6 @@ const Status = (props: { item: ListItemProps }) => {
     } else if (allowed === false) {
       return <StatusSpan text="Failure" class="bg-red-500" />
     } else if (props.item.result === 'null' || result.errors) {
-      console.log('case')
       return <StatusSpan text="Error" class="bg-amber-500" />
     }
   } catch {}

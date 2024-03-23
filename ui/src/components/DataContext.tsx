@@ -1,6 +1,6 @@
 import { createSignal, createContext, useContext, JSX, onMount } from 'solid-js'
 import { DecisionLog } from '../types/DecisionLog'
-import { createStore } from 'solid-js/store'
+import { createStore, reconcile } from 'solid-js/store'
 import { makePersisted } from '@solid-primitives/storage'
 
 function createInitialState() {
@@ -36,7 +36,14 @@ function createInitialState() {
       body: JSON.stringify({ application_settings: applicationSettings }),
     })
       .then((res) => res.json())
-      .then((data) => setBundle(() => data.files))
+      .then((data) => {
+        setBundle(reconcile(data.files))
+
+        const firstKey =
+          Object.keys(data.files).find((key) => key.endsWith('.rego')) || Object.keys(data.files)[0]
+
+        setEditingPolicy(firstKey)
+      })
   })
 
   return {
