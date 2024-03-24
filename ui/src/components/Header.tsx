@@ -44,7 +44,7 @@ export const Header = () => {
               evalResult.errors.length > 1 ? 's' : ''
             } occurred:\n`
             evalResult.errors.forEach((err) => {
-              output += `policy.rego:${err.location.row}:${err.code} ${err.message}\n`
+              output += `${err.location.file}:${err.location.row} ${err.code}\n ${err.message}\n`
             })
 
             setOutput(output)

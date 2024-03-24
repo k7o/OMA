@@ -1,6 +1,8 @@
 package models
 
 import (
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/dgryski/trifles/uuid"
@@ -87,7 +89,7 @@ func (result *EvalResult) MakeEvalResponse(bundle *Bundle) *EvalResponse {
 	return &EvalResponse{
 		Id:     uuid.UUIDv4(),
 		Result: parseResult(result),
-		Errors: result.Errors,
+		Errors: parseErrors(result.Errors),
 		Coverage: CoverageResponse{
 			Covered:      makeCoverage(result.Coverage.Files),
 			CoveredLines: result.Coverage.CoveredLines,
@@ -120,4 +122,25 @@ func parseResult(result *EvalResult) interface{} {
 	}
 
 	return result.Result[0].Expressions[0].Value
+}
+
+var tempFileRegex = regexp.MustCompile("temp-files-[^/]*")
+
+func parseErrors(errors []EvalError) []EvalError {
+	if len(errors) == 0 {
+		return errors
+	}
+
+	tempdir := ""
+	indices := tempFileRegex.FindStringIndex(errors[0].Location.File)
+	// If the pattern is found, trim the string up to the start index of the pattern
+	if indices != nil {
+		tempdir = errors[0].Location.File[:indices[1]]
+	}
+
+	for i := range errors {
+		errors[i].Location.File = strings.TrimPrefix(errors[i].Location.File, tempdir)
+	}
+
+	return errors
 }
