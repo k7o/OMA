@@ -124,8 +124,8 @@ export const Editor = () => {
                     <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
                       {(file) => (
                         <li
-                          class={`px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-slate-200 ${
-                            editingPolicy() === file && 'bg-slate-400'
+                          class={`px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-gray-100 ${
+                            editingPolicy() === file && 'bg-gray-300'
                           }`}
                           onClick={() => setEditingPolicy(file)}
                         >

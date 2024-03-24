@@ -25,7 +25,9 @@ function createInitialState() {
   })
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
-  const [localHistory, setLocalHistory] = createSignal<DecisionLog[]>([])
+  const [localHistory, setLocalHistory] = makePersisted(createSignal<DecisionLog[]>([]), {
+    name: 'editor_local_history',
+  })
   const [options, setOptions] = makePersisted(
     createSignal<EvalOptions>({
       coverage: false,

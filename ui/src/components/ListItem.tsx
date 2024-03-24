@@ -51,17 +51,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
 
       <Show when={open()}>
         <TabBar tab={tab} setTab={setTab} hasPolicy={props.item.bundle !== undefined} />
-        <Switch
-          fallback={
-            <Match when={tab() === 'Input'}>
-              <SmallEditor
-                value={props.item.input}
-                previousValue={props.previousItem?.input}
-                language="json"
-              />
-            </Match>
-          }
-        >
+        <Switch>
           <Match when={tab() === 'Input'}>
             <SmallEditor
               value={JSON.stringify(JSON.parse(props.item.input), null, 2)}
@@ -86,7 +76,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
           </Match>
           <Show when={() => tab() === 'Bundle' && props.item.bundle !== undefined}>
             <Match when={tab() === 'Bundle'}>
-              <BundleBar bundle={props.item.bundle!}>
+              <BundleBar bundle={props.item.bundle!} previousBundle={props.previousItem?.bundle}>
                 {([filename, content]) => (
                   <SmallEditor
                     value={props.item.bundle![filename]}
@@ -105,18 +95,29 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
 
 const BundleBar = (props: {
   bundle: Bundle
+  previousBundle?: Bundle
   children: (props: [filename: string, content: string]) => JSX.Element
 }) => {
   const [bundleFile, setBundleFile] = createSignal(Object.keys(props.bundle)[0])
 
+  if (
+    props.previousBundle !== undefined &&
+    Object.keys(props.previousBundle).every((key) => key in props.bundle)
+  ) {
+    setBundleFile(
+      Object.keys(props.bundle).find((key) => props.bundle[key] !== props.previousBundle![key]) ||
+        Object.keys(props.bundle)[0],
+    )
+  }
+
   return (
     <>
-      <div class="flex mt-2 w-full bg-gray-100">
+      <div class="flex flex-wrap mt-2 w-full bg-gray-100 px-1">
         <For each={Object.keys(props.bundle)}>
-          {(tab, index) => {
+          {(tab) => {
             return (
               <button
-                class={`${index() !== 0 && 'ml-2'} px-4 py- rounded-xl ${
+                class={`px-4 py-1 my-1 rounded ${
                   bundleFile() === tab ? 'bg-gray-200' : 'bg-gray-100'
                 }`}
                 onClick={() => setBundleFile(tab)}
@@ -127,7 +128,7 @@ const BundleBar = (props: {
           }}
         </For>
       </div>
-      ({props.children([bundleFile(), props.bundle[bundleFile()]])})
+      {props.children([bundleFile(), props.bundle[bundleFile()]])}
     </>
   )
 }
@@ -188,7 +189,7 @@ const TabBar = (props: TabBarProps) => {
 
           return (
             <button
-              class={`${index() !== 0 && 'ml-2'} px-4 py- rounded-xl ${
+              class={`${index() !== 0 && 'ml-2'} w-full px-4 rounded-xl ${
                 props.tab() === tab ? 'bg-gray-200' : 'bg-gray-100'
               }`}
               onClick={() => props.setTab(tab)}
