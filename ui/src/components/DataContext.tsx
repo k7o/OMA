@@ -5,16 +5,35 @@ import { makePersisted } from '@solid-primitives/storage'
 import { Bundle } from '../types/Bundle'
 
 function createInitialState() {
-  const [bundle, setBundle] = createStore<Bundle>(JSON.parse(JSON.stringify(defaultBundle)))
-  const [editingPolicy, setEditingPolicy] = createSignal<string>(Object.keys(bundle)[0])
-  const [input, setInput] = createSignal(defaultInput)
-  const [data, setData] = createSignal('')
+  const [bundle, setBundle] = makePersisted(
+    createStore<Bundle>(JSON.parse(JSON.stringify(defaultBundle))),
+    {
+      name: 'editor_bundle',
+    },
+  )
+  const [editingPolicy, setEditingPolicy] = makePersisted(
+    createSignal<string>(Object.keys(bundle)[0]),
+    {
+      name: 'editor_editing_policy',
+    },
+  )
+  const [input, setInput] = makePersisted(createSignal(defaultInput), {
+    name: 'editor_input',
+  })
+  const [data, setData] = makePersisted(createSignal(''), {
+    name: 'editor_data',
+  })
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
   const [localHistory, setLocalHistory] = createSignal<DecisionLog[]>([])
-  const [options, setOptions] = createSignal<EvalOptions>({
-    coverage: false,
-  })
+  const [options, setOptions] = makePersisted(
+    createSignal<EvalOptions>({
+      coverage: false,
+    }),
+    {
+      name: 'editor_options',
+    },
+  )
 
   const [applicationSettings, setApplicationSettings] = makePersisted(
     createStore<ApplicationSettings>(
