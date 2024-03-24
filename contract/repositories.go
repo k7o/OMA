@@ -19,6 +19,7 @@ type PlaygroundLogsRepository interface {
 type RevisionRepository interface {
 	ListRevisions() ([]models.Revision, error)
 	ListRevisionFiles(packageId string) ([]string, error)
+	DownloadRevisionById(revisionId string) (*models.Bundle, error)
 	DownloadRevision(revision *models.Revision) (*models.Bundle, error)
 	DownloadRevisionForPackage(packageId string, filename string) (*models.Bundle, error)
 }

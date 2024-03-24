@@ -89,6 +89,50 @@ func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string
 	return result, nil
 }
 
+func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*models.Bundle, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/?package_version=%s", r.conf.GitlabPackagesURL, revisionId))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var packages []GitlabPackage
+	if err := json.NewDecoder(resp.Body).Decode(&packages); err != nil {
+		return nil, err
+	}
+
+	if len(packages) == 0 {
+		return nil, fmt.Errorf("revision not found")
+	}
+
+	files, err := r.ListRevisionFiles(fmt.Sprintf("%d", packages[0].ID))
+	if err != nil {
+		return nil, err
+	}
+
+	bundle := make(models.Bundle)
+	for _, filename := range files {
+		b, err := r.DownloadRevision(&models.Revision{
+			PackageId:   fmt.Sprintf("%d", packages[0].ID),
+			FileName:    filename,
+			Name:        packages[0].Name,
+			PackageType: packages[0].PackageType,
+			Version:     packages[0].Version,
+			CreatedAt:   packages[0].CreatedAt,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		for k, v := range *b {
+			bundle[k] = v
+		}
+	}
+
+	return &bundle, nil
+}
+
 func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.GitlabPackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName))
 	if err != nil {

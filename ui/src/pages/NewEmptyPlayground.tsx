@@ -1,13 +1,16 @@
 import { onMount } from 'solid-js'
-import { defaultBundle, useData } from '../components/DataContext'
+import { defaultBundle, defaultInput, useData } from '../components/DataContext'
 import { useNavigate } from '@solidjs/router'
 
 export const NewEmptyPlayground = () => {
-  const { setBundle } = useData()
+  const { setNewBundle } = useData()
   const navigate = useNavigate()
 
   onMount(() => {
-    setBundle(JSON.parse(JSON.stringify(defaultBundle)))
+    setNewBundle(
+      JSON.parse(JSON.stringify(defaultBundle)),
+      defaultInput,
+    )
     navigate('/play')
   })
 

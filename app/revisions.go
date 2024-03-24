@@ -23,6 +23,17 @@ func (a *App) RevisionFiles(ctx context.Context, packageId string) ([]string, er
 	return files, nil
 }
 
+func (a *App) DownloadRevisionById(ctx context.Context, revisionId string) (*models.DownloadRevisionResponse, error) {
+	revision, err := a.revisionRepository.DownloadRevisionById(revisionId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.DownloadRevisionResponse{
+		Files: revision,
+	}, nil
+}
+
 func (a *App) DownloadRevisionPackage(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadRevisionResponse, error) {
 	revision, err := a.revisionRepository.DownloadRevisionForPackage(req.Revision.PackageId, req.Revision.FileName)
 	if err != nil {

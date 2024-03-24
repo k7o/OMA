@@ -15,6 +15,7 @@ type App interface {
 
 	RevisionFiles(ctx context.Context, packageId string) ([]string, error)
 	ListRevisions(ctx context.Context) ([]models.Revision, error)
+	DownloadRevisionById(ctx context.Context, revisionId string) (*models.DownloadRevisionResponse, error)
 	DownloadRevisionPackage(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadRevisionResponse, error)
 	DownloadRevision(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadRevisionResponse, error)
 

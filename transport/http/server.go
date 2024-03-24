@@ -42,8 +42,9 @@ func (s *Server) Run() error {
 
 	router.Route("/api/revisions", func(r chi.Router) {
 		r.Get("/", s.listRevisions)
-		r.Get("/{package_id}", s.revisionFiles)
-		r.Get("/{package_id}/{file_name}", s.downloadPackage)
+		r.Get("/{revision_id}", s.downloadRevisionById)
+		r.Get("/package/{package_id}", s.revisionFiles)
+		r.Get("/package/{package_id}/{file_name}", s.downloadPackage)
 		r.Get("/{package_type}/{name}/{version}/{file_name}", s.download)
 	})
 

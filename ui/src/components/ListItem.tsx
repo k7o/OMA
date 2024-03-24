@@ -4,13 +4,19 @@ import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
 import { DecisionLog } from '../types/DecisionLog'
-import { Bundle } from '../types/Bundle'
+import { Bundle, BundleResponse } from '../types/Bundle'
 
 import ChevronRight from '../assets/chevron-right.svg'
 import ChevronDown from '../assets/chevron-down.svg'
+import { useNavigate } from '@solidjs/router'
 
 type ListItemProps = DecisionLog & {
   bundle?: Bundle
+}
+
+async function fetchRevisionBundle(revisionId: string) {
+  const res = await fetch(`http://localhost:8080/api/revisions/${revisionId}`)
+  return (await res.json()) as BundleResponse
 }
 
 const Tabs = ['Input', 'Bundle', 'Result'] as const
@@ -19,7 +25,8 @@ type Tabs = (typeof Tabs)[number]
 export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
-  const { setInput, setNewBundle } = useData()
+  const { setNewBundle } = useData()
+  const navigate = useNavigate()
 
   return (
     <li
@@ -34,19 +41,31 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
         </Show>
         <Status item={props.item} />
         <Show when={props.item.bundle}>
-          <button
+          <ReplayButton
             onClick={(e) => {
-              setInput(props.item.input)
-              setNewBundle(props.item.bundle!)
               e.stopPropagation()
+
+              setNewBundle(props.item.bundle!, props.item.input)
+              navigate("/play")
             }}
-            class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
-          >
-            <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
-          </button>
+          />
         </Show>
-        <span class="text-sm">{new Date(props.item.timestamp).toUTCString()}</span>
-        <span class="text-sm">{props.item.decision_id}</span>
+        <Show when={props.item.revision_id !== undefined}>
+          <ReplayButton
+            onClick={async (e) => {
+              e.stopPropagation()
+
+              const bundle = await fetchRevisionBundle(props.item.revision_id!)
+              setNewBundle(bundle.files, props.item.input)
+              navigate("/play")
+            }}
+          />
+        </Show>
+        <span class="text-sm mr-2">{new Date(props.item.timestamp).toUTCString()}</span>
+        <Show when={props.item.path !== ''}>
+          <span class="text-sm mr-2">/{props.item.path}</span>
+        </Show>
+        <span class="text-sm mr-2">{props.item.decision_id}</span>
       </div>
 
       <Show when={open()}>
@@ -90,6 +109,24 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
         </Switch>
       </Show>
     </li>
+  )
+}
+
+const ReplayButton = (props: {
+  onClick: (
+    e: MouseEvent & {
+      currentTarget: HTMLButtonElement
+      target: Element
+    },
+  ) => void
+}) => {
+  return (
+    <button
+      onClick={props.onClick}
+      class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
+    >
+      <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
+    </button>
   )
 }
 

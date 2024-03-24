@@ -12,12 +12,12 @@ export const BundleFileSelection = () => {
   const params = useParams()
   const navigate = useNavigate()
   async function fetchRevisions() {
-    const res = await fetch(`http://localhost:8080/api/revisions/${params.package_id}`)
+    const res = await fetch(`http://localhost:8080/api/revisions/package/${params.package_id}`)
     return (await res.json()) as string[]
   }
 
   async function fetchPackageData(filename: string) {
-    const res = await fetch(`http://localhost:8080/api/revisions/${params.package_id}/${filename}`)
+    const res = await fetch(`http://localhost:8080/api/revisions/package/${params.package_id}/${filename}`)
     return (await res.json()) as BundleResponse
   }
 

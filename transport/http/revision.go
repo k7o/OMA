@@ -32,6 +32,17 @@ func (s *Server) revisionFiles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
+func (s *Server) downloadRevisionById(w http.ResponseWriter, r *http.Request) {
+	result, err := s.app.DownloadRevisionById(r.Context(), chi.URLParam(r, "revision_id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
 func (s *Server) downloadPackage(w http.ResponseWriter, r *http.Request) {
 	req := &models.DownloadBundleRequest{
 		Revision: models.Revision{

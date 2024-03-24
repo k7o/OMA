@@ -47,8 +47,11 @@ function createInitialState() {
     ),
   )
 
-  function setNewBundle(files: Bundle) {
+  function setNewBundle(files: Bundle, input?: string, data?: string) {
+    console.log('setNewBundle', input, data)
     setBundle(reconcile(files))
+    setInput(input || "")
+    setData(data || "")
 
     // Set current editing policy to the first policy file or the first file if there are no policy files.
     setEditingPolicy(
