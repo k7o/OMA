@@ -38,11 +38,16 @@ func (s *Server) Run() error {
 		r.Post("/format", s.format)
 		r.Post("/lint", s.lint)
 		r.Get("/test-all", s.testAll)
-		r.Post("/download", s.download)
+	})
+
+	router.Route("/api/revisions", func(r chi.Router) {
+		r.Get("/", s.listRevisions)
+		r.Get("/{package_id}", s.revisionFiles)
+		r.Get("/{package_id}/{file_name}", s.downloadPackage)
+		r.Get("/{package_type}/{name}/{version}/{file_name}", s.download)
 	})
 
 	router.Route("/api/decision-log", func(r chi.Router) {
-		// Default logs push route from OPA.
 		r.Post("/logs", s.pushDecisionLog)
 		r.Get("/list", s.listDecisionLogs)
 	})

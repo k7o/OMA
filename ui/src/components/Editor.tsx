@@ -6,6 +6,7 @@ import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
+import { useSearchParams } from '@solidjs/router'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -26,6 +27,7 @@ export const Editor = () => {
     setCoverage,
     localHistory,
   } = useData()
+  const [searchParams] = useSearchParams()
 
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
@@ -103,6 +105,8 @@ export const Editor = () => {
     }
   }
 
+  console.log(searchParams)
+
   return (
     <div class="flex h-full w-full">
       <SplitPane gutterClass="gutter gutter-horizontal" sizes={[70, 30]}>
@@ -115,7 +119,7 @@ export const Editor = () => {
                 sizes={[35, 65]}
               >
                 <div class="flex flex-col h-full w-full">
-                  <h3 class="bg-gray-400 text-white px-2">FILES</h3>
+                  <h3 class="bg-gray-400 text-white px-2 flex">FILES</h3>
                   <ul class="h-full mt-2">
                     <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
                       {(file) => (

@@ -8,6 +8,7 @@ import (
 	"oma/internal/decisionlogs"
 	"oma/internal/opa"
 	"oma/internal/playgroundlogs"
+	"oma/internal/revision"
 	"oma/transport/http"
 	"os"
 
@@ -26,6 +27,11 @@ func main() {
 				Port: 8080,
 			},
 		},
+		RevisionConfig: revision.RevisionConfig{
+			Gitlab: revision.GitlabRevisionRepositoryConfig{
+				GitlabPackagesURL: "https://gitlab.com/api/v4/projects/55642500/packages",
+			},
+		},
 	}
 
 	zerolog.SetGlobalLevel(conf.LogLevel)
@@ -37,6 +43,7 @@ func main() {
 
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
+	revisionRepository := revision.NewGitlabRevisionRepository(&conf.RevisionConfig.Gitlab)
 	opa := opa.New()
 
 	err = internalDb.Migrate(ctx, db, decisionLogRepository, playgroundLogRepository)
@@ -44,7 +51,7 @@ func main() {
 		log.Fatal().Err(err).Msg("migrating database")
 	}
 
-	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opa)
+	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opa, revisionRepository)
 	server := http.New(&conf.Transport.HTTP, app)
 	if err := server.Run(); err != nil {
 		log.Fatal().Err(err).Msg("running server")

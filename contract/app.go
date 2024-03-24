@@ -13,7 +13,10 @@ type App interface {
 	Lint(ctx context.Context, req *models.LintRequest) (*models.LintResponse, error)
 	TestAll(ctx context.Context, req *models.EvalRequest) (*models.TestAllResponse, error)
 
-	DownloadBundle(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadBundleResponse, error)
+	RevisionFiles(ctx context.Context, packageId string) ([]string, error)
+	ListRevisions(ctx context.Context) ([]models.Revision, error)
+	DownloadRevisionPackage(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadRevisionResponse, error)
+	DownloadRevision(ctx context.Context, req *models.DownloadBundleRequest) (*models.DownloadRevisionResponse, error)
 
 	PlaygroundLogs(ctx context.Context) ([]playgroundlogs.PlaygroundLog, error)
 

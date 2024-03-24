@@ -1,11 +1,13 @@
-import { Accessor, For, JSX, Match, Setter, Show, Switch, children, createSignal } from 'solid-js'
-import ChevronRight from '../assets/chevron-right.svg'
-import ChevronDown from '../assets/chevron-down.svg'
+import { Accessor, For, JSX, Match, Setter, Show, Switch, createSignal } from 'solid-js'
 import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 
 import ReplayIcon from '../assets/replay-icon.svg'
 import { useData } from './DataContext'
 import { DecisionLog } from '../types/DecisionLog'
+import { Bundle } from '../types/Bundle'
+
+import ChevronRight from '../assets/chevron-right.svg'
+import ChevronDown from '../assets/chevron-down.svg'
 
 type ListItemProps = DecisionLog & {
   bundle?: Bundle
@@ -17,7 +19,7 @@ type Tabs = (typeof Tabs)[number]
 export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
-  const { setInput, setBundle } = useData()
+  const { setInput, setNewBundle } = useData()
 
   return (
     <li
@@ -35,7 +37,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
           <button
             onClick={(e) => {
               setInput(props.item.input)
-              setBundle(props.item.bundle!)
+              setNewBundle(props.item.bundle!)
               e.stopPropagation()
             }}
             class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"

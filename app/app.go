@@ -16,17 +16,21 @@ type App struct {
 	conf                     *config.Config
 	decisionLogRepository    contract.DecisionLogRepository
 	playgroundLogsRepository contract.PlaygroundLogsRepository
+	revisionRepository       contract.RevisionRepository
 	opa                      contract.Opa
 }
 
 func New(conf *config.Config,
 	decisionLogRepository contract.DecisionLogRepository,
 	playgroundLogsRepository contract.PlaygroundLogsRepository,
-	opa contract.Opa) *App {
+	opa contract.Opa,
+	revisionRepository contract.RevisionRepository,
+) *App {
 	return &App{
 		conf:                     conf,
 		decisionLogRepository:    decisionLogRepository,
 		playgroundLogsRepository: playgroundLogsRepository,
+		revisionRepository:       revisionRepository,
 		opa:                      opa,
 	}
 }

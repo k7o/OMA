@@ -1,7 +1,7 @@
 package models
 
 type DownloadBundleRequest struct {
-	ApplicationSettings ApplicationSettings `json:"application_settings"`
+	Revision Revision `json:"revision"`
 }
 
 type ApplicationSettings struct {
@@ -9,6 +9,6 @@ type ApplicationSettings struct {
 	BundleServerUrl string `json:"bundle_server_url"`
 }
 
-type DownloadBundleResponse struct {
-	Files Bundle `json:"files"`
+type DownloadRevisionResponse struct {
+	Files *Bundle `json:"files"`
 }

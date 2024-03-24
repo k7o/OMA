@@ -1,12 +1,11 @@
-import { createSignal, createContext, useContext, JSX, onMount } from 'solid-js'
+import { createSignal, createContext, useContext, JSX } from 'solid-js'
 import { DecisionLog } from '../types/DecisionLog'
 import { createStore, reconcile } from 'solid-js/store'
 import { makePersisted } from '@solid-primitives/storage'
+import { Bundle } from '../types/Bundle'
 
 function createInitialState() {
-  const [bundle, setBundle] = createStore<Bundle>({
-    'policy.rego': defaultPolicy,
-  })
+  const [bundle, setBundle] = createStore<Bundle>(JSON.parse(JSON.stringify(defaultBundle)))
   const [editingPolicy, setEditingPolicy] = createSignal<string>(Object.keys(bundle)[0])
   const [input, setInput] = createSignal(defaultInput)
   const [data, setData] = createSignal('')
@@ -27,28 +26,19 @@ function createInitialState() {
     ),
   )
 
-  onMount(() => {
-    fetch('http://localhost:8080/api/download', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ application_settings: applicationSettings }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setBundle(reconcile(data.files))
-        // Set current editing policy to the first policy file or the first file if there are no policy files.
-        setEditingPolicy(
-          Object.keys(data.files).find((key) => key.endsWith('.rego')) ||
-            Object.keys(data.files)[0],
-        )
-      })
-  })
+  function setNewBundle(files: Bundle) {
+    setBundle(reconcile(files))
+
+    // Set current editing policy to the first policy file or the first file if there are no policy files.
+    setEditingPolicy(
+      Object.keys(files).find((key) => key.endsWith('.rego')) || Object.keys(files)[0],
+    )
+  }
 
   return {
     bundle,
     setBundle,
+    setNewBundle,
     editingPolicy,
     setEditingPolicy,
     input,
@@ -100,3 +90,5 @@ export const defaultInput = `{
         "groups": ["sales", "marketing"]
     }
 }`
+
+export const defaultBundle = { 'policy.rego': defaultPolicy }
