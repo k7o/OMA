@@ -7,6 +7,7 @@ import (
 	"oma/models"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -25,16 +26,31 @@ func New() *Opa {
 }
 
 func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOptions) (*models.EvalResult, error) {
-	buf, err := bundle.TarGz()
+	if bundle == nil {
+		return nil, errors.New("bundle is required")
+	}
+
+	// Create a temporary directory
+	tempDir, err := os.MkdirTemp("", "temp-files-")
 	if err != nil {
 		return nil, err
 	}
+	defer os.RemoveAll(tempDir) // Clean up the temporary directory
 
-	// Write the bundle to a temporary file.
-	bundleFile, cleanup, err := writeBytesToFile(buf.Bytes(), "tar.gz")
-	defer cleanup()
-	if err != nil {
-		return nil, err
+	// Iterate over the map and write each file to the temporary directory
+	dataFiles := []string{}
+	for path, content := range *bundle {
+		fullPath := filepath.Join(tempDir, path)
+		// Ensure the directory structure exists
+		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+			return nil, err
+		}
+		// Write the file
+		if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
+			return nil, err
+		}
+
+		dataFiles = append(dataFiles, fullPath)
 	}
 
 	// Write the input to a temporary file.
@@ -43,10 +59,16 @@ func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOp
 	if err != nil {
 		return nil, err
 	}
-	cmdString := fmt.Sprintf("eval -b %s -i %s --profile data", bundleFile, inputFile)
+
+	cmdString := fmt.Sprintf("eval -i %s --profile data", inputFile)
 	if options.Coverage {
 		cmdString += " --coverage"
 	}
+
+	for _, dataFile := range dataFiles {
+		cmdString += fmt.Sprintf(" --data %s", dataFile)
+	}
+
 	output, err := cmd(cmdString)
 	if err != nil {
 		return nil, err

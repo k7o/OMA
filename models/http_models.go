@@ -86,7 +86,7 @@ type DecisionLogRequestItem struct {
 func (result *EvalResult) MakeEvalResponse(bundle *Bundle) *EvalResponse {
 	return &EvalResponse{
 		Id:     uuid.UUIDv4(),
-		Result: makeResult(result),
+		Result: parseResult(result),
 		Errors: result.Errors,
 		Coverage: CoverageResponse{
 			Covered:      makeCoverage(result.Coverage.Files),
@@ -110,7 +110,7 @@ func makeCoverage(files map[string]Coverage) []Covered {
 	return covered
 }
 
-func makeResult(result *EvalResult) interface{} {
+func parseResult(result *EvalResult) interface{} {
 	if len(result.Result) == 0 {
 		return nil
 	} else if result.Result[0].Expressions == nil {

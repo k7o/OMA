@@ -40,16 +40,19 @@ func (a *App) Eval(ctx context.Context, req *models.EvalRequest) (*models.EvalRe
 	resp := result.MakeEvalResponse(&req.Bundle)
 	resultJson, err := json.Marshal(resp.Result)
 	if err != nil {
+		log.Debug().Err(err).Msg("failed to marshal result to json")
 		return nil, errors.New("failed to marshal result to json")
 	}
 
 	coverageJson, err := json.Marshal(resp.Coverage)
 	if err != nil {
+		log.Debug().Err(err).Msg("failed to marshal coverage to json")
 		return nil, errors.New("failed to marshal coverage to json")
 	}
 
 	bundleJson, err := json.Marshal(req.Bundle)
 	if err != nil {
+		log.Debug().Err(err).Msg("failed to marshal bundle to json")
 		return nil, errors.New("failed to marshal bundle to json")
 	}
 
