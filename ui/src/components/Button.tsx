@@ -10,7 +10,7 @@ export const Button = ({ text, icon, onClick }: ButtonProps) => {
       class='px-4 py-2 mx-1 font-thin bg-blue-400 text-white rounded-md flex items-center'
       onClick={onClick}
     >
-      {icon && <img src={icon} class='w-5 h-5' />}
+      {icon && <img src={icon} class='w-5 h-5 text-white' />}
       <span class='px-3'>{text}</span>
     </button>
   )

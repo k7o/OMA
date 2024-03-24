@@ -108,13 +108,13 @@ export const Editor = () => {
       <SplitPane gutterClass="gutter gutter-horizontal" sizes={[70, 30]}>
         <div>
           <SplitPane gutterClass="gutter gutter-vertical" direction="vertical" sizes={[60, 40]}>
-            <div class="flex flex-wrap">
+            <div class="flex">
               <SplitPane
                 direction="horizontal"
                 gutterClass="gutter gutter-horizontal"
                 sizes={[35, 65]}
               >
-                <div class="flex flex-col h-full w-full overflow-y-scroll">
+                <div class="flex flex-col h-full w-full">
                   <h3 class="bg-gray-400 text-white px-2">FILES</h3>
                   <ul class="h-full mt-2">
                     <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>

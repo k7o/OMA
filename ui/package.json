@@ -30,7 +30,7 @@
     "@monaco-editor/loader": "^1.4.0",
     "@solid-primitives/storage": "^2.1.4",
     "@solidjs/router": "^0.13.0",
-    "@tanstack/solid-query": "^5.28.5",
+    "install": "^0.13.0",
     "solid-codemirror": "^2.3.1",
     "solid-js": "^1.8.11",
     "solid-split-pane": "^0.0.5"

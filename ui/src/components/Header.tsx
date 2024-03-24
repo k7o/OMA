@@ -1,10 +1,11 @@
-import OpaIcon from '../assets/opa.svg'
-import PlayIcon from '../assets/play.png'
-import FormatIcon from '../assets/format-icon.png'
-import PublishIcon from '../assets/publish-icon.png'
 import { Button } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
+
+import OpaIcon from '../assets/opa.svg'
+import PlayIcon from '../assets/play-circle.svg'
+import FormatIcon from '../assets/format-icon.png'
+import PublishIcon from '../assets/publish-icon.png'
 
 export const Header = () => {
   const {
