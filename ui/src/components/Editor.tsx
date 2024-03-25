@@ -163,10 +163,10 @@ export const Editor = () => {
                 <For fallback={<li class="px-2 pt-4">No history</li>} each={localHistory()}>
                   {(item, index) => {
                     if (localHistory().length === 1 || localHistory().length === index() + 1) {
-                      return <ListItem item={item} />
+                      return <ListItem item={item} local={true} />
                     }
 
-                    return <ListItem item={item} previousItem={localHistory()[index() + 1]} />
+                    return <ListItem item={item} previousItem={localHistory()[index() + 1]} local={true} />
                   }}
                 </For>
               </ul>

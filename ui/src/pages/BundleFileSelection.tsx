@@ -31,13 +31,13 @@ export const BundleFileSelection = () => {
       <div class="w-96 space-y-2">
         <For each={files()} fallback={<li>Loading...</li>}>
           {(file) => {
-            const [clicked, setClicked] = createSignal(false)
+            const [loading, setLoading] = createSignal(false)
 
             return (
               <button
                 class="flex justify-between items-center w-full bg-gray-200 hover:bg-gray-300 text-gray-600 py-2 px-4 rounded"
                 onClick={async () => {
-                  setClicked(true)
+                  setLoading(true)
 
                   const data = await fetchPackageData(file)
                   setNewBundle(data.files)
@@ -49,7 +49,7 @@ export const BundleFileSelection = () => {
                   <img src={FileArchive} class="w-8 h-8 mr-4" />
                   {file}
                 </div>
-                <Show when={clicked()}>
+                <Show when={loading()}>
                   <svg
                     aria-hidden="true"
                     role="status"

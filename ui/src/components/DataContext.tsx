@@ -25,7 +25,9 @@ function createInitialState() {
   })
   const [output, setOutput] = createSignal('')
   const [coverage, setCoverage] = createSignal<Coverage | undefined>()
-  const [localHistory, setLocalHistory] = makePersisted(createSignal<DecisionLog[]>([]), {
+  const [localHistory, setLocalHistory] = makePersisted(createSignal<(DecisionLog & { 
+    is_error: boolean
+  })[]>([]), {
     name: 'editor_local_history',
   })
   const [options, setOptions] = makePersisted(
@@ -48,10 +50,10 @@ function createInitialState() {
   )
 
   function setNewBundle(files: Bundle, input?: string, data?: string) {
-    console.log('setNewBundle', input, data)
     setBundle(reconcile(files))
     setInput(input || "")
     setData(data || "")
+    setOutput('')
 
     // Set current editing policy to the first policy file or the first file if there are no policy files.
     setEditingPolicy(

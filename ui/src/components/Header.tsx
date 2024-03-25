@@ -64,7 +64,10 @@ export const Header = () => {
               input: input(),
               data: data(),
               path: '',
-              result: JSON.stringify(evalResult.result, null, 2),
+              result: evalResult.errors.length > 0
+                ? JSON.stringify(evalResult.result, null, 2)
+                : JSON.stringify(evalResult.errors, null, 2),
+              is_error: evalResult.errors.length > 0,
               timestamp: evalResult.timestamp,
             },
             ...history,

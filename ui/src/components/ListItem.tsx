@@ -1,4 +1,6 @@
 import { Accessor, For, JSX, Match, Setter, Show, Switch, createSignal } from 'solid-js'
+import { useNavigate } from '@solidjs/router'
+
 import { MonacoDiffEditor, MonacoEditor } from '../lib/solid-monaco'
 
 import ReplayIcon from '../assets/replay-icon.svg'
@@ -8,10 +10,11 @@ import { Bundle, BundleResponse } from '../types/Bundle'
 
 import ChevronRight from '../assets/chevron-right.svg'
 import ChevronDown from '../assets/chevron-down.svg'
-import { useNavigate } from '@solidjs/router'
+import XIcon from '../assets/x.svg'
 
 type ListItemProps = DecisionLog & {
   bundle?: Bundle
+  is_error?: boolean
 }
 
 async function fetchRevisionBundle(revisionId: string) {
@@ -22,50 +25,75 @@ async function fetchRevisionBundle(revisionId: string) {
 const Tabs = ['Input', 'Bundle', 'Result'] as const
 type Tabs = (typeof Tabs)[number]
 
-export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemProps }) => {
+export const ListItem = (props: {
+  item: ListItemProps
+  previousItem?: ListItemProps
+  local?: boolean
+}) => {
   const [open, setOpen] = createSignal(false)
   const [tab, setTab] = createSignal<Tabs>('Input')
-  const { setNewBundle } = useData()
+  const { setNewBundle, setLocalHistory } = useData()
   const navigate = useNavigate()
+
+  if (props.previousItem !== undefined && props.item.bundle !== props.previousItem.bundle) {
+    setTab('Bundle')
+  }
 
   return (
     <li
       class={`py-3 hover:bg-gray-50 flex relative overflow-y-scroll flex-col ${open() && 'h-full'}`}
     >
-      <div class="flex items-center" onClick={() => setOpen(!open())}>
-        <Show
-          when={!open()}
-          fallback={<img src={ChevronDown} alt="collapse" class="w-5 h-5 ml-2" />}
-        >
-          <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
-        </Show>
-        <Status item={props.item} />
-        <Show when={props.item.bundle}>
-          <ReplayButton
-            onClick={(e) => {
-              e.stopPropagation()
+      <div class="flex justify-between" onClick={() => setOpen(!open())}>
+        <div class="flex items-center">
+          <Show
+            when={!open()}
+            fallback={<img src={ChevronDown} alt="collapse" class="w-5 h-5 ml-2" />}
+          >
+            <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
+          </Show>
+          <Status item={props.item} />
+          <Show when={props.item.bundle}>
+            <ReplayButton
+              onClick={(e) => {
+                e.stopPropagation()
 
-              setNewBundle(props.item.bundle!, props.item.input)
-              navigate("/play")
-            }}
-          />
-        </Show>
-        <Show when={props.item.revision_id !== undefined}>
-          <ReplayButton
-            onClick={async (e) => {
-              e.stopPropagation()
+                setNewBundle(props.item.bundle!, props.item.input)
+                navigate('/play')
+              }}
+            />
+          </Show>
+          <Show when={props.item.revision_id !== undefined}>
+            <ReplayButton
+              onClick={async (e) => {
+                e.stopPropagation()
 
-              const bundle = await fetchRevisionBundle(props.item.revision_id!)
-              setNewBundle(bundle.files, props.item.input)
-              navigate("/play")
-            }}
-          />
-        </Show>
-        <span class="text-sm mr-2">{new Date(props.item.timestamp).toUTCString()}</span>
-        <Show when={props.item.path !== ''}>
-          <span class="text-sm mr-2">/{props.item.path}</span>
-        </Show>
-        <span class="text-sm mr-2">{props.item.decision_id}</span>
+                const bundle = await fetchRevisionBundle(props.item.revision_id!)
+                setNewBundle(bundle.files, props.item.input)
+                navigate('/play')
+              }}
+            />
+          </Show>
+          <span class="text-sm mr-2">{new Date(props.item.timestamp).toUTCString()}</span>
+          <Show when={props.item.path !== ''}>
+            <span class="text-sm mr-2">/{props.item.path}</span>
+          </Show>
+          <span class="text-sm mr-2">{props.item.decision_id}</span>
+        </div>
+        <div class="px-2 flex items-center">
+          <Show when={props.local}>
+            <button
+              class="align-self-end p-2 hover:bg-gray-200 rounded"
+              onClick={(e) => {
+                e.stopPropagation()
+                setLocalHistory((history) =>
+                  history.filter((item) => item.decision_id !== props.item.decision_id),
+                )
+              }}
+            >
+              <img src={XIcon} alt="delete" class="w-5 h-5" />
+            </button>
+          </Show>
+        </div>
       </div>
 
       <Show when={open()}>
@@ -75,7 +103,7 @@ export const ListItem = (props: { item: ListItemProps; previousItem?: ListItemPr
             <SmallEditor
               value={JSON.stringify(JSON.parse(props.item.input), null, 2)}
               previousValue={
-                props.previousItem
+                props.previousItem && props.previousItem.input != ''
                   ? JSON.stringify(JSON.parse(props.previousItem.input), null, 2)
                   : undefined
               }
@@ -182,7 +210,7 @@ const Status = (props: { item: ListItemProps }) => {
       return <StatusSpan text="Allowed" class="bg-green-500" />
     } else if (allowed === false) {
       return <StatusSpan text="Failure" class="bg-red-500" />
-    } else if (props.item.result === 'null' || result.errors) {
+    } else if (props.item.result === 'null' || props.item.is_error === true) {
       return <StatusSpan text="Error" class="bg-amber-500" />
     }
   } catch {}
