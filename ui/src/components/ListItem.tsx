@@ -199,7 +199,13 @@ const BundleBar = (props: {
 }
 
 const StatusSpan = (props: { text: string; class: string }) => {
-  return <span class={`p-2 text-sm mx-2 rounded text-white ${props.class}`}>{props.text}</span>
+  return (
+    <span
+      class={`p-2 flex w-16 text-center justify-center flex-shrink-0 flex-grow-0 text-sm mx-2 rounded text-white ${props.class}`}
+    >
+      {props.text}
+    </span>
+  )
 }
 
 const Status = (props: { item: ListItemProps }) => {
@@ -213,9 +219,11 @@ const Status = (props: { item: ListItemProps }) => {
     } else if (props.item.result === 'null' || props.item.is_error === true) {
       return <StatusSpan text="Error" class="bg-amber-500" />
     }
+
+    return <StatusSpan text="Unknown" class="bg-gray-500" />
   } catch {}
 
-  return
+  return <StatusSpan text="Unknown" class="bg-gray-500" />
 }
 
 const findAllowedValue = (data: any): any => {

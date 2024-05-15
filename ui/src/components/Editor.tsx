@@ -6,7 +6,6 @@ import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
-import { useSearchParams } from '@solidjs/router'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -27,7 +26,6 @@ export const Editor = () => {
     setCoverage,
     localHistory,
   } = useData()
-  const [searchParams] = useSearchParams()
 
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
@@ -105,8 +103,6 @@ export const Editor = () => {
     }
   }
 
-  console.log(searchParams)
-
   return (
     <div class="flex h-full w-full">
       <SplitPane gutterClass="gutter gutter-horizontal" sizes={[70, 30]}>
@@ -166,7 +162,13 @@ export const Editor = () => {
                       return <ListItem item={item} local={true} />
                     }
 
-                    return <ListItem item={item} previousItem={localHistory()[index() + 1]} local={true} />
+                    return (
+                      <ListItem
+                        item={item}
+                        previousItem={localHistory()[index() + 1]}
+                        local={true}
+                      />
+                    )
                   }}
                 </For>
               </ul>
