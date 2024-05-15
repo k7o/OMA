@@ -31,8 +31,9 @@ function createInitialState() {
     name: 'editor_local_history',
   })
   const [options, setOptions] = makePersisted(
-    createSignal<EvalOptions>({
+    createStore<EvalOptions>({
       coverage: false,
+      entrypoint: "/"
     }),
     {
       name: 'editor_options',

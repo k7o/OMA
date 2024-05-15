@@ -1,4 +1,5 @@
-import { Button } from './Button'
+import { Button } from './ui/button'
+import { Button as MyButton } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
 
@@ -6,7 +7,20 @@ import OpaIcon from '../assets/opa.svg'
 import PlayIcon from '../assets/play-circle.svg'
 import FormatIcon from '../assets/format-icon.svg'
 import PublishIcon from '../assets/publish-icon.svg'
+import SettingsIcon from '../assets/gear-icon.svg'
 import { backend_url } from '../utils/backend_url'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
+import { Checkbox } from './ui/checkbox'
+import { Label } from './ui/label'
+import { Input } from './ui/input'
+import { unwrap } from 'solid-js/store'
 
 export const Header = () => {
   const {
@@ -30,7 +44,7 @@ export const Header = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          options: options(),
+          options: unwrap(options),
           data: data(),
           input: input(),
           bundle: bundle,
@@ -54,7 +68,7 @@ export const Header = () => {
             setOutput(JSON.stringify(evalResult.result, null, 2))
           }
 
-          if (evalResult.coverage && options().coverage) {
+          if (evalResult.coverage && options.coverage) {
             setCoverage(evalResult.coverage)
           }
 
@@ -116,20 +130,53 @@ export const Header = () => {
         <OpaIcon id="opa-logo" class="h-10" />
         <h3 class="text-xl hidden md:block text-nowrap">The Rego Playground</h3>
       </div>
-      <div class="items-center flex">
-        <input
-          type="checkbox"
-          class="bg-blue-400 h-5 w-5"
-          id="coverage"
-          name="Coverage"
-          onChange={(e) => {
-            setOptions({ coverage: e.target.checked })
-          }}
-        />
-        <label class="text-base px-2">Coverage</label>
-        <Button text="Evaluate" icon={PlayIcon} onClick={evaluate} />
-        <Button text="Format" icon={FormatIcon} onClick={format} />
-        <Button text="Publish" icon={PublishIcon} />
+      <div class="items-center flex gap-1.5 pr-2">
+        <Dialog>
+          <DialogTrigger as={Button}>
+            <SettingsIcon class="w-5 h-5 stroke-background" />
+            <span class="px-3">Settings</span>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle class="mb-2">Editor Settings</DialogTitle>
+              <DialogDescription class="flex flex-col gap-4">
+                <div class="items-top flex space-x-2">
+                  <Checkbox
+                    id="coverage"
+                    checked={options.coverage}
+                    onChange={(e) => setOptions('coverage', e)}
+                  />
+                  <div class="grid gap-1.5 leading-none">
+                    <Label for="coverage-input">Show coverage results</Label>
+                  </div>
+                </div>
+
+                <div class="grid w-full max-w-sm items-center gap-1.5">
+                  <Label for="entrypoint">Entrypoint</Label>
+                  <Input
+                    type="url"
+                    id="entrypoint"
+                    value={options.entrypoint}
+                    onChange={(e) => setOptions('entrypoint', e.target.value)}
+                  />
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+        <Button onClick={evaluate}>
+          <PlayIcon class="w-5 h-5 stroke-background" />
+          <span class="px-3">Evaluate</span>
+        </Button>
+        <Button onClick={format}>
+          <FormatIcon class="w-5 h-5 stroke-background" />
+          <span class="px-3">Format</span>
+        </Button>
+        <Button>
+          {' '}
+          <PublishIcon class="w-5 h-5 stroke-background" />
+          <span class="px-3">Publish</span>{' '}
+        </Button>
       </div>
     </header>
   )

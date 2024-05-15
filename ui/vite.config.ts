@@ -1,3 +1,4 @@
+import path from 'path'
 import { defineConfig } from 'vite'
 import solidPlugin from 'vite-plugin-solid'
 import devtools from 'solid-devtools/vite'
@@ -33,6 +34,11 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+  },
+  resolve: {
+    alias: {
+      '~': path.resolve(__dirname, './src'),
+    },
   },
   optimizeDeps: {
     // Add both @codemirror/state and @codemirror/view to included deps to optimize
