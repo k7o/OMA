@@ -46,11 +46,8 @@ export const ListItem = (props: {
     >
       <div class="flex justify-between" onClick={() => setOpen(!open())}>
         <div class="flex items-center">
-          <Show
-            when={!open()}
-            fallback={<img src={ChevronDown} alt="collapse" class="w-5 h-5 ml-2" />}
-          >
-            <img src={ChevronRight} alt="expand" class="w-5 h-5 ml-2" />
+          <Show when={!open()} fallback={<ChevronDown class="w-5 h-5 ml-2" />}>
+            <ChevronRight class="w-5 h-5 ml-2" />
           </Show>
           <Status item={props.item} />
           <Show when={props.item.bundle}>
@@ -91,7 +88,7 @@ export const ListItem = (props: {
                 )
               }}
             >
-              <img src={XIcon} alt="delete" class="w-5 h-5" />
+              <XIcon class="w-5 h-5" />
             </button>
           </Show>
         </div>
@@ -154,7 +151,7 @@ const ReplayButton = (props: {
       onClick={props.onClick}
       class="px-2 py-1 text-white hover:bg-slate-600 bg-slate-300 rounded mx-4"
     >
-      <img src={ReplayIcon} alt="replay" class="w-7 h-7" />
+      <ReplayIcon class="w-7 h-7" />
     </button>
   )
 }

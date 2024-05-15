@@ -47,7 +47,7 @@ export const BundleFileSelection = () => {
                 }}
               >
                 <div class="flex items-center">
-                  <img src={FileArchive} class="w-8 h-8 mr-4" />
+                  <FileArchive class="w-8 h-8 mr-4" />
                   {file}
                 </div>
                 <Show when={loading()}>

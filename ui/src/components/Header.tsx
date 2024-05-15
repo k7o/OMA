@@ -4,8 +4,8 @@ import { EvalResult } from '../types/EvalResult'
 
 import OpaIcon from '../assets/opa.svg'
 import PlayIcon from '../assets/play-circle.svg'
-import FormatIcon from '../assets/format-icon.png'
-import PublishIcon from '../assets/publish-icon.png'
+import FormatIcon from '../assets/format-icon.svg'
+import PublishIcon from '../assets/publish-icon.svg'
 import { backend_url } from '../utils/backend_url'
 
 export const Header = () => {
@@ -113,8 +113,8 @@ export const Header = () => {
   return (
     <header class="h-14 w-full min-h-14 flex justify-between">
       <div class="items-center flex mx-2 ">
-        <img src={OpaIcon} id="opa-logo" alt="OPA logo" class="h-10" />
-        <h3 class="text-2xl hidden md:block">The Rego Playground</h3>
+        <OpaIcon id="opa-logo" class="h-10" />
+        <h3 class="text-xl hidden md:block text-nowrap">The Rego Playground</h3>
       </div>
       <div class="items-center flex">
         <input

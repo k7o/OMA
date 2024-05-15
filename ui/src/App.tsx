@@ -1,4 +1,4 @@
-import { Router, Route, A, RouteSectionProps } from '@solidjs/router'
+import { Router, Route, A, RouteSectionProps, useLocation } from '@solidjs/router'
 
 import { Playground } from './pages/Playground'
 import { DecisionLogs } from './pages/DecisionLogs'
@@ -12,7 +12,7 @@ import { BundleFileSelection } from './pages/BundleFileSelection'
 import HomeIcon from './assets/home.svg'
 import PlayIcon from './assets/play-circle.svg'
 import LogsIcon from './assets/logs.svg'
-
+import { Component, JSX } from 'solid-js'
 
 const App = () => {
   return (
@@ -45,10 +45,19 @@ const RootPage = (props: RouteSectionProps<unknown>) => {
   )
 }
 
-const SidebarItem = (props: { href: string; icon: string }) => {
+const SidebarItem = (props: {
+  href: string
+  icon: Component<JSX.SvgSVGAttributes<SVGSVGElement>>
+}) => {
+  const location = useLocation()
+
+  console.log(location.pathname === props.href)
+
   return (
-    <A href={props.href} class="flex flex-col my-4 items-center text-sm font-thin">
-      <img src={props.icon} class="w-8 h-8 color" />
+    <A href={props.href} class="flex flex-col my-2 p-2 items-center text-sm font-thin hover:bg-gray-200 rounded-md">
+      <props.icon
+        class={`w-8 h-8 ${location.pathname === props.href ? 'stroke-blue-400' : 'stroke-white'}`}
+      />
     </A>
   )
 }
