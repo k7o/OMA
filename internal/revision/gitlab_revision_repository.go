@@ -12,7 +12,7 @@ import (
 )
 
 type GitlabRevisionRepositoryConfig struct {
-	GitlabPackagesURL string `json:"gitlab_packages_url"`
+	PackagesURL string `json:"gitlab_packages_url"`
 }
 
 type GitlabRevisionRepository struct {
@@ -39,7 +39,7 @@ type GitlabPackage struct {
 }
 
 func (r *GitlabRevisionRepository) ListRevisions() ([]models.Revision, error) {
-	resp, err := http.Get(r.conf.GitlabPackagesURL + "?sort=desc")
+	resp, err := http.Get(r.conf.PackagesURL + "?sort=desc")
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ type RevisionFiles []struct {
 }
 
 func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/package_files", r.conf.GitlabPackagesURL, packageId))
+	resp, err := http.Get(fmt.Sprintf("%s/%s/package_files", r.conf.PackagesURL, packageId))
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string
 }
 
 func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/?package_version=%s", r.conf.GitlabPackagesURL, revisionId))
+	resp, err := http.Get(fmt.Sprintf("%s/?package_version=%s", r.conf.PackagesURL, revisionId))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*mod
 }
 
 func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.GitlabPackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName))
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.PackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName))
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +149,7 @@ func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (
 }
 
 func (r *GitlabRevisionRepository) DownloadRevisionForPackage(packageId string, filename string) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s", r.conf.GitlabPackagesURL, packageId))
+	resp, err := http.Get(fmt.Sprintf("%s/%s", r.conf.PackagesURL, packageId))
 	if err != nil {
 		return nil, err
 	}

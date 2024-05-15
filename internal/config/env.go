@@ -8,8 +8,8 @@ import (
 )
 
 type Config struct {
-	LogLevel       zerolog.Level
-	RevisionConfig revision.RevisionConfig
+	LogLevel       zerolog.Level           `envconfig:"default=1"`
+	RevisionConfig revision.RevisionConfig `envconfig:"optional"`
 	Transport      TransportConfig
 }
 

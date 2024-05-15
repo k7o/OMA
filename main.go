@@ -14,24 +14,17 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/vrischmann/envconfig"
 
 	_ "github.com/glebarez/go-sqlite"
 )
 
 func main() {
 	ctx := context.Background()
-	conf := &config.Config{
-		LogLevel: zerolog.DebugLevel,
-		Transport: config.TransportConfig{
-			HTTP: http.Config{
-				Port: 8080,
-			},
-		},
-		RevisionConfig: revision.RevisionConfig{
-			Gitlab: revision.GitlabRevisionRepositoryConfig{
-				GitlabPackagesURL: "https://gitlab.com/api/v4/projects/55642500/packages",
-			},
-		},
+	conf := &config.Config{}
+
+	if err := envconfig.Init(&conf); err != nil {
+		log.Fatal().Err(err).Msg("initializing environment variables")
 	}
 
 	zerolog.SetGlobalLevel(conf.LogLevel)
@@ -50,6 +43,8 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("migrating database")
 	}
+
+	log.Info().Msgf("Started listening on port %d", conf.Transport.HTTP.Port)
 
 	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opa, revisionRepository)
 	server := http.New(&conf.Transport.HTTP, app)

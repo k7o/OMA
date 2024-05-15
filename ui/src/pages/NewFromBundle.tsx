@@ -3,7 +3,7 @@ import { Revision } from '../types/Revision'
 import { A, useNavigate } from '@solidjs/router'
 
 async function fetchRevisions() {
-  const res = await fetch('http://localhost:8080/api/revisions')
+  const res = await fetch(`${window.location.origin}/api/revisions`)
   return (await res.json()) as Revision[]
 }
 

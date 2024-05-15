@@ -4,7 +4,7 @@ import { For, createResource } from 'solid-js'
 export const NewFromRepository = () => {
   const params = useParams()
   async function fetchRevisions() {
-    const res = await fetch(`http://localhost:8080/api/revisions/${params.package_id}`)
+    const res = await fetch(`${window.location.origin}/api/revisions/${params.package_id}`)
     return (await res.json()) as string[]
   }
 

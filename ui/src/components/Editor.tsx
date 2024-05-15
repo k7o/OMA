@@ -29,7 +29,7 @@ export const Editor = () => {
 
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/lint', {
+      const res = await fetch(`${window.location.origin}/api/lint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

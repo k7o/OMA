@@ -8,7 +8,7 @@ import GearIcon from '../assets/gear-icon.svg'
 import RefreshIcon from '../assets/refresh-icon.svg'
 
 async function fetchDecisionLogs() {
-  const res = await fetch('http://localhost:8080/api/decision-log/list')
+  const res = await fetch(`${window.location.origin}/api/decision-log/list`)
   return (await res.json()) as DecisionLog[]
 }
 

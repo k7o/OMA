@@ -23,7 +23,7 @@ export const Header = () => {
 
   async function evaluate() {
     try {
-      const res = await fetch('http://localhost:8080/api/eval', {
+      const res = await fetch(`${window.location.origin}/api/eval`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export const Header = () => {
 
   async function format() {
     try {
-      const res = await fetch('http://localhost:8080/api/format', {
+      const res = await fetch(`${window.location.origin}/api/format`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

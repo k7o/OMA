@@ -3,6 +3,7 @@ package http
 import (
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"oma/contract"
 	"oma/models"
@@ -70,7 +71,7 @@ func (s *Server) Run() error {
 		fs.ServeHTTP(w, r)
 	})
 
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.conf.Port), router); err != nil {
 		return err
 	}
 

@@ -2,3 +2,4 @@
 .opa
 __debug_*
 dist/
+.env

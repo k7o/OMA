@@ -18,7 +18,7 @@ type ListItemProps = DecisionLog & {
 }
 
 async function fetchRevisionBundle(revisionId: string) {
-  const res = await fetch(`http://localhost:8080/api/revisions/${revisionId}`)
+  const res = await fetch(`${window.location.origin}/api/revisions/${revisionId}`)
   return (await res.json()) as BundleResponse
 }
 
