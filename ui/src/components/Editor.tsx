@@ -8,6 +8,7 @@ import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
 import { backend_url } from '../utils/backend_url'
 import FilePlus from '../assets/file-plus.svg'
+import TrashIcon from '../assets/trash.svg'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -131,36 +132,39 @@ export const Editor = () => {
                       <FilePlus class="hover:bg-slate-300 rounded-md p-0.5" />
                     </button>
                   </h3>
-                  <ul class="h-full mt-2">
-                    <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
-                      {(file) => (
-                        <li
-                          class={`px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-gray-100 ${
-                            editingPolicy() === file && 'bg-gray-300'
-                          }`}
-                          onClick={() => setEditingPolicy(file)}
-                        >
-                          {file}
-                        </li>
-                      )}
-                    </For>
-                    <Show when={createFile() != null}>
-                      <li class="px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-gray-100">
-                        <input
-                          ref={setInputRef}
-                          onChange={(e) => setCreateFile(e.target.value)}
-                          onFocusOut={() => {
-                            if (createFile() !== undefined) {
-                              setBundle(createFile()!, "package ")
-                              setEditingPolicy(createFile()!)
-                            }
+                  <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
+                    {(file) => (
+                      <button
+                        class={`px-4 text-left py-1 break-words mx-2 mt-2 rounded hover:bg-slate-300 bg-gray-100 ${
+                          editingPolicy() === file && 'bg-gray-300'
+                        }`}
+                        onClick={() => setEditingPolicy(file)}
+                        onKeyDown={(e) => {
+                          if (e.metaKey && e.key === 'Backspace') {
+                            console.log('This should delete ', file)
+                          }
+                        }}
+                      >
+                        {file}
+                      </button>
+                    )}
+                  </For>
+                  <Show when={createFile() != null}>
+                    <button class="px-4 text-left py-1 break-words mx-2 mt-2 rounded hover:bg-slate-300 bg-gray-100">
+                      <input
+                        ref={setInputRef}
+                        onChange={(e) => setCreateFile(e.target.value)}
+                        onFocusOut={() => {
+                          if (createFile() !== undefined) {
+                            setBundle(createFile()!, 'package ')
+                            setEditingPolicy(createFile()!)
+                          }
 
-                            setCreateFile(undefined)
-                          }}
-                        ></input>
-                      </li>
-                    </Show>
-                  </ul>
+                          setCreateFile(undefined)
+                        }}
+                      ></input>
+                    </button>
+                  </Show>
                 </div>
                 <div class="flex flex-col h-full w-full flex-grow">
                   <h3 class="bg-gray-400 text-white px-2 relative overflow-hidden">POLICY</h3>
