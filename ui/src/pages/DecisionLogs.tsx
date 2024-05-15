@@ -6,9 +6,10 @@ import { Button } from '../components/Button'
 
 import GearIcon from '../assets/gear-icon.svg'
 import RefreshIcon from '../assets/refresh-icon.svg'
+import { backend_url } from '../utils/backend_url'
 
 async function fetchDecisionLogs() {
-  const res = await fetch(`${window.location.origin}/api/decision-log/list`)
+  const res = await fetch(`${backend_url}/api/decision-log/list`)
   return (await res.json()) as DecisionLog[]
 }
 

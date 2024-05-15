@@ -11,6 +11,7 @@ import { Bundle, BundleResponse } from '../types/Bundle'
 import ChevronRight from '../assets/chevron-right.svg'
 import ChevronDown from '../assets/chevron-down.svg'
 import XIcon from '../assets/x.svg'
+import { backend_url } from '../utils/backend_url'
 
 type ListItemProps = DecisionLog & {
   bundle?: Bundle
@@ -18,7 +19,7 @@ type ListItemProps = DecisionLog & {
 }
 
 async function fetchRevisionBundle(revisionId: string) {
-  const res = await fetch(`${window.location.origin}/api/revisions/${revisionId}`)
+  const res = await fetch(`${backend_url}/api/revisions/${revisionId}`)
   return (await res.json()) as BundleResponse
 }
 

@@ -6,6 +6,7 @@ import OpaIcon from '../assets/opa.svg'
 import PlayIcon from '../assets/play-circle.svg'
 import FormatIcon from '../assets/format-icon.png'
 import PublishIcon from '../assets/publish-icon.png'
+import { backend_url } from '../utils/backend_url'
 
 export const Header = () => {
   const {
@@ -23,7 +24,7 @@ export const Header = () => {
 
   async function evaluate() {
     try {
-      const res = await fetch(`${window.location.origin}/api/eval`, {
+      const res = await fetch(`${backend_url}/api/eval`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +82,7 @@ export const Header = () => {
 
   async function format() {
     try {
-      const res = await fetch(`${window.location.origin}/api/format`, {
+      const res = await fetch(`${backend_url}/api/format`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

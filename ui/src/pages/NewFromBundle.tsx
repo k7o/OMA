@@ -1,9 +1,10 @@
 import { For, Show, createResource } from 'solid-js'
 import { Revision } from '../types/Revision'
 import { A, useNavigate } from '@solidjs/router'
+import { backend_url } from '../utils/backend_url'
 
 async function fetchRevisions() {
-  const res = await fetch(`${window.location.origin}/api/revisions`)
+  const res = await fetch(`${backend_url}/api/revisions`)
   return (await res.json()) as Revision[]
 }
 

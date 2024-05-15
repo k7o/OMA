@@ -6,18 +6,19 @@ import { BundleResponse } from '../types/Bundle'
 import { useData } from '../components/DataContext'
 
 import FileArchive from '../assets/file-archive.svg'
+import { backend_url } from '../utils/backend_url'
 
 export const BundleFileSelection = () => {
   const { setNewBundle } = useData()
   const params = useParams()
   const navigate = useNavigate()
   async function fetchRevisions() {
-    const res = await fetch(`${window.location.origin}/api/revisions/package/${params.package_id}`)
+    const res = await fetch(`${backend_url}/api/revisions/package/${params.package_id}`)
     return (await res.json()) as string[]
   }
 
   async function fetchPackageData(filename: string) {
-    const res = await fetch(`${window.location.origin}/api/revisions/package/${params.package_id}/${filename}`)
+    const res = await fetch(`${backend_url}/api/revisions/package/${params.package_id}/${filename}`)
     return (await res.json()) as BundleResponse
   }
 

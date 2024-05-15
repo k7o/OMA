@@ -6,6 +6,7 @@ import { editor } from 'monaco-editor'
 import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
+import { backend_url } from '../utils/backend_url'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -29,7 +30,7 @@ export const Editor = () => {
 
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
-      const res = await fetch(`${window.location.origin}/api/lint`, {
+      const res = await fetch(`${backend_url}/api/lint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
