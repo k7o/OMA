@@ -1,4 +1,4 @@
 type EvalOptions = {
     coverage: boolean
-    entrypoint: string
+    path: string
 }

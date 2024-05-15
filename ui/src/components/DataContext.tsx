@@ -33,7 +33,7 @@ function createInitialState() {
   const [options, setOptions] = makePersisted(
     createStore<EvalOptions>({
       coverage: false,
-      entrypoint: "/"
+      path: "/"
     }),
     {
       name: 'editor_options',

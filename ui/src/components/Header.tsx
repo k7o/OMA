@@ -152,12 +152,12 @@ export const Header = () => {
                 </div>
 
                 <div class="grid w-full max-w-sm items-center gap-1.5">
-                  <Label for="entrypoint">Entrypoint</Label>
+                  <Label for="path">Path</Label>
                   <Input
                     type="url"
-                    id="entrypoint"
-                    value={options.entrypoint}
-                    onChange={(e) => setOptions('entrypoint', e.target.value)}
+                    id="path"
+                    value={options.path}
+                    onChange={(e) => setOptions('path', e.target.value)}
                   />
                 </div>
               </DialogDescription>

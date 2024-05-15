@@ -60,7 +60,7 @@ func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOp
 		return nil, err
 	}
 
-	cmdString := fmt.Sprintf("eval -i %s --profile data", inputFile)
+	cmdString := fmt.Sprintf("eval -i %s --profile", inputFile)
 	if options.Coverage {
 		cmdString += " --coverage"
 	}
@@ -68,6 +68,18 @@ func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOp
 	for _, dataFile := range dataFiles {
 		cmdString += fmt.Sprintf(" --data %s", dataFile)
 	}
+
+	cmdString += " data"
+	if options.Path != "" {
+		options.Path = strings.ReplaceAll(options.Path, "/", ".")
+		if !strings.HasPrefix(options.Path, ".") {
+			options.Path = "." + options.Path
+		}
+
+		cmdString += strings.TrimSuffix(strings.TrimSpace(options.Path), ".")
+	}
+
+	log.Debug().Str("cmd", cmdString).Msg("Executing opa command")
 
 	output, err := cmd(cmdString)
 	if err != nil {
