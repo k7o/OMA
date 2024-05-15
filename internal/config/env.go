@@ -10,6 +10,7 @@ import (
 type Config struct {
 	LogLevel       zerolog.Level           `envconfig:"default=1"`
 	RevisionConfig revision.RevisionConfig `envconfig:"optional"`
+	OpaDownloadUrl string
 	Transport      TransportConfig
 }
 

@@ -19,10 +19,14 @@ var policyFileRegex = regexp.MustCompile(`(?s)(?m).*(\d+): (.*)`)
 
 var ErrExitError = errors.New("command exited")
 
-type Opa struct{}
+type Opa struct {
+	executable string
+}
 
-func New() *Opa {
-	return &Opa{}
+func New(opaExecutable string) *Opa {
+	return &Opa{
+		executable: opaExecutable,
+	}
 }
 
 func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOptions) (*models.EvalResult, error) {
@@ -81,7 +85,7 @@ func (opa *Opa) Eval(bundle *models.Bundle, input string, options *models.EvalOp
 
 	log.Debug().Str("cmd", cmdString).Msg("Executing opa command")
 
-	output, err := cmd(cmdString)
+	output, err := opa.cmd(cmdString)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +106,7 @@ func (opa *Opa) Format(policy string) (string, error) {
 		return "", err
 	}
 
-	output, err := cmd(fmt.Sprintf("fmt %s", policyFile))
+	output, err := opa.cmd(fmt.Sprintf("fmt %s", policyFile))
 	if err != nil {
 		return "", err
 	}
@@ -117,7 +121,7 @@ func (opa *Opa) Lint(policy string) (string, []string, error) {
 		return "", nil, err
 	}
 
-	output, err := cmd(fmt.Sprintf("check %s", policyFile))
+	output, err := opa.cmd(fmt.Sprintf("check %s", policyFile))
 	if errors.Is(err, ErrExitError) {
 		output = []byte(strings.TrimPrefix(err.Error(), ErrExitError.Error()+"\ncheck command: "))
 	} else if err != nil {
@@ -153,14 +157,14 @@ func (opa *Opa) Lint(policy string) (string, []string, error) {
 	return msg, errors, nil
 }
 
-func cmd(command string) ([]byte, error) {
+func (opa *Opa) cmd(command string) ([]byte, error) {
 	splits := strings.Split(command, " ")
 	if command == "" || len(splits) == 0 {
 		log.Debug().Msg("empty opa command")
 		return nil, fmt.Errorf("empty opa command")
 	}
 
-	cmd := exec.Command("/opt/homebrew/bin/opa", splits...)
+	cmd := exec.Command(opa.executable, splits...)
 	output, err := cmd.Output()
 	if exitErr, ok := err.(*exec.ExitError); ok && len(output) == 0 {
 		stderr := string(exitErr.Stderr)

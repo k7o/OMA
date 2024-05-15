@@ -37,7 +37,11 @@ func main() {
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
 	revisionRepository := revision.NewGitlabRevisionRepository(&conf.RevisionConfig.Gitlab)
-	opa := opa.New()
+	opaExecutable, err := opa.Download(conf.OpaDownloadUrl)
+	if err != nil {
+		log.Fatal().Err(err).Msg("downloading opa")
+	}
+	opaService := opa.New(opaExecutable)
 
 	err = internalDb.Migrate(ctx, db, decisionLogRepository, playgroundLogRepository)
 	if err != nil {
@@ -46,7 +50,7 @@ func main() {
 
 	log.Info().Msgf("Started listening on port %d", conf.Transport.HTTP.Port)
 
-	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opa, revisionRepository)
+	app := app.New(conf, decisionLogRepository, playgroundLogRepository, opaService, revisionRepository)
 	server := http.New(&conf.Transport.HTTP, app)
 	if err := server.Run(); err != nil {
 		log.Fatal().Err(err).Msg("running server")
