@@ -7,6 +7,7 @@ import type { Monaco } from '@monaco-editor/loader'
 import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
 import { backend_url } from '../utils/backend_url'
+import FilePlus from '../assets/file-plus.svg'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -27,6 +28,14 @@ export const Editor = () => {
     setCoverage,
     localHistory,
   } = useData()
+  const [createFile, setCreateFile] = createSignal<string | undefined>()
+  const [inputRef, setInputRef] = createSignal<HTMLInputElement | undefined>()
+
+  createEffect(() => {
+    if (inputRef() !== undefined) {
+      inputRef()?.focus()
+    }
+  })
 
   const [linting, { refetch: lint }] = createResource<Lint>(async () => {
     try {
@@ -116,7 +125,12 @@ export const Editor = () => {
                 sizes={[35, 65]}
               >
                 <div class="flex flex-col h-full w-full">
-                  <h3 class="bg-gray-400 text-white px-2 flex">FILES</h3>
+                  <h3 class="bg-gray-400 text-white px-2 flex justify-between">
+                    FILES
+                    <button onClick={() => setCreateFile('')}>
+                      <FilePlus class="hover:bg-slate-300 rounded-md p-0.5" />
+                    </button>
+                  </h3>
                   <ul class="h-full mt-2">
                     <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
                       {(file) => (
@@ -130,6 +144,22 @@ export const Editor = () => {
                         </li>
                       )}
                     </For>
+                    <Show when={createFile() != null}>
+                      <li class="px-4 py-1 break-words m-2 rounded hover:bg-slate-300 bg-gray-100">
+                        <input
+                          ref={setInputRef}
+                          onChange={(e) => setCreateFile(e.target.value)}
+                          onFocusOut={() => {
+                            if (createFile() !== undefined) {
+                              setBundle(createFile()!, "package ")
+                              setEditingPolicy(createFile()!)
+                            }
+
+                            setCreateFile(undefined)
+                          }}
+                        ></input>
+                      </li>
+                    </Show>
                   </ul>
                 </div>
                 <div class="flex flex-col h-full w-full flex-grow">

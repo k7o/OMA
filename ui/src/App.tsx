@@ -50,9 +50,6 @@ const SidebarItem = (props: {
   icon: Component<JSX.SvgSVGAttributes<SVGSVGElement>>
 }) => {
   const location = useLocation()
-
-  console.log(location.pathname === props.href)
-
   return (
     <A href={props.href} class="flex flex-col my-2 p-2 items-center text-sm font-thin hover:bg-gray-200 rounded-md">
       <props.icon
