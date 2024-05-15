@@ -1,3 +1,4 @@
 .DS_Store
 .opa
 __debug_*
+dist/

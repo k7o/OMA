@@ -13,7 +13,7 @@ import (
 )
 
 func InitInMemoryDatabase(ctx context.Context) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func InitDatabase() (*sql.DB, error) {
 		os.Create("./data/1234/data.db")
 	}
 
-	db, err := sql.Open("sqlite3", "./data/1234/data.db")
+	db, err := sql.Open("sqlite", "./data/1234/data.db")
 	if err != nil {
 		return nil, err
 	}
