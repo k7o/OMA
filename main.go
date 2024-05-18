@@ -20,15 +20,16 @@ import (
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	ctx := context.Background()
 	conf := &config.Config{}
-
 	if err := envconfig.Init(&conf); err != nil {
 		log.Fatal().Err(err).Msg("initializing environment variables")
 	}
 
+	log.Info().Msgf("Loaded configuration: %+v", conf)
+
 	zerolog.SetGlobalLevel(conf.LogLevel)
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	db, err := internalDb.InitInMemoryDatabase(ctx)
 	if err != nil {
 		log.Fatal().Err(err).Msg("initializing database")

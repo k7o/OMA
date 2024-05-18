@@ -7,6 +7,10 @@ import (
 )
 
 func Download(url string) (string, error) {
+	if _, err := os.Stat("./opa"); err == nil {
+		return "./opa", nil
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

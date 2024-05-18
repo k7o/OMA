@@ -12,7 +12,8 @@ import (
 )
 
 type GitlabRevisionRepositoryConfig struct {
-	PackagesURL string `json:"gitlab_packages_url"`
+	PackagesURL  string `json:"packages_url"`
+	PrivateToken string `json:"private_token"`
 }
 
 type GitlabRevisionRepository struct {
@@ -39,7 +40,12 @@ type GitlabPackage struct {
 }
 
 func (r *GitlabRevisionRepository) ListRevisions() ([]models.Revision, error) {
-	resp, err := http.Get(r.conf.PackagesURL + "?sort=desc")
+	url := r.conf.PackagesURL + "?sort=desc"
+	if r.conf.PrivateToken != "" {
+		url += fmt.Sprintf("&private_token=%s", r.conf.PrivateToken)
+	}
+
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +77,12 @@ type RevisionFiles []struct {
 }
 
 func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/package_files", r.conf.PackagesURL, packageId))
+	url := fmt.Sprintf("%s/%s/package_files", r.conf.PackagesURL, packageId)
+	if r.conf.PrivateToken != "" {
+		url += fmt.Sprintf("?private_token=%s", r.conf.PrivateToken)
+	}
+
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +101,12 @@ func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string
 }
 
 func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/?package_version=%s", r.conf.PackagesURL, revisionId))
+	url := fmt.Sprintf("%s/?package_version=%s", r.conf.PackagesURL, revisionId)
+	if r.conf.PrivateToken != "" {
+		url += fmt.Sprintf("&private_token=%s", r.conf.PrivateToken)
+	}
+
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +150,11 @@ func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*mod
 }
 
 func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.PackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName))
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.PackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName)
+	if r.conf.PrivateToken != "" {
+		url += fmt.Sprintf("?private_token=%s", r.conf.PrivateToken)
+	}
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
