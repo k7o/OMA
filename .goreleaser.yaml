@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
 
 before:
@@ -25,6 +26,69 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+
+dockers:
+  - dockerfile: Dockerfile.release
+    ids:
+      - oma
+    image_templates:
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-arm
+      - ghcr.io/$GITHUB_REPOSITORY:latest-arm
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .ShortCommit }}-arm
+    goos: linux
+    goarch: arm
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+  - dockerfile: Dockerfile.release
+    ids:
+      - oma
+    image_templates:
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-arm64
+      - ghcr.io/$GITHUB_REPOSITORY:latest-arm64
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .ShortCommit }}-arm64
+    goos: linux
+    goarch: arm64
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+  - dockerfile: Dockerfile.release
+    ids:
+      - oma
+    image_templates:
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-amd64
+      - ghcr.io/$GITHUB_REPOSITORY:latest-amd64
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .ShortCommit }}-amd64
+    goos: linux
+    goarch: amd64
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+
+docker_manifests:
+  - name_template: ghcr.io/$GITHUB_REPOSITORY-{{ .Tag }}
+    image_templates:
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-arm
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-arm64
+      - ghcr.io/$GITHUB_REPOSITORY:{{ .Tag }}-amd64
 
 changelog:
   sort: asc
