@@ -16,7 +16,7 @@
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.35",
     "solid-devtools": "^0.30.0",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.10",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
     "vite-plugin-solid": "^2.10.2",
@@ -29,7 +29,7 @@
     "printWidth": 100
   },
   "dependencies": {
-    "@kobalte/core": "^0.13.1",
+    "@kobalte/core": "^0.13.6",
     "@monaco-editor/loader": "^1.4.0",
     "@solid-primitives/storage": "^2.1.4",
     "@solidjs/router": "^0.13.0",
@@ -39,7 +39,7 @@
     "solid-codemirror": "^2.3.1",
     "solid-js": "^1.8.11",
     "solid-split-pane": "^0.0.5",
-    "tailwind-merge": "^2.3.0",
+    "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
   }
 }

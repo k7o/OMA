@@ -1,5 +1,4 @@
 import { Button } from './ui/button'
-import { Button as MyButton } from './Button'
 import { useData } from './DataContext'
 import { EvalResult } from '../types/EvalResult'
 
@@ -19,8 +18,8 @@ import {
 } from './ui/dialog'
 import { Checkbox } from './ui/checkbox'
 import { Label } from './ui/label'
-import { Input } from './ui/input'
 import { unwrap } from 'solid-js/store'
+import { TextField, TextFieldInput, TextFieldLabel } from './ui/text-field'
 
 export const Header = () => {
   const {
@@ -152,13 +151,10 @@ export const Header = () => {
                 </div>
 
                 <div class="grid w-full max-w-sm items-center gap-1.5">
-                  <Label for="path">Path</Label>
-                  <Input
-                    type="url"
-                    id="path"
-                    value={options.path}
-                    onChange={(e) => setOptions('path', e.target.value)}
-                  />
+                  <TextField onChange={(value) => setOptions('path', value)}>
+                    <TextFieldLabel for="path">Path</TextFieldLabel>
+                    <TextFieldInput type="url" id="path" value={options.path} />
+                  </TextField>
                 </div>
               </DialogDescription>
             </DialogHeader>

@@ -1,6 +1,6 @@
 module oma
 
-go 1.22
+go 1.23
 
 require (
 	github.com/dgryski/trifles v0.0.0-20230903005119-f50d829f2e54
