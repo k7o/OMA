@@ -32,9 +32,9 @@ dockers:
     ids:
       - OMA
     image_templates:
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-arm"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:latest-arm"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .ShortCommit }}-arm"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:latest-arm"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm"
     goos: linux
     goarch: arm
     use: buildx
@@ -50,9 +50,9 @@ dockers:
     ids:
       - OMA
     image_templates:
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-arm64"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:latest-arm64"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .ShortCommit }}-arm64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:latest-arm64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm64"
     goos: linux
     goarch: arm64
     use: buildx
@@ -68,9 +68,9 @@ dockers:
     ids:
       - OMA
     image_templates:
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-amd64"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:latest-amd64"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .ShortCommit }}-amd64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:latest-amd64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-amd64"
     goos: linux
     goarch: amd64
     use: buildx
@@ -84,11 +84,11 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
 
 docker_manifests:
-  - name_template: "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}"
+  - name_template: "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}"
     image_templates:
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-arm"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-arm64"
-      - "{{ .Env.GITHUB_REPOSITORY | lower }}:{{ .Tag }}-amd64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
+      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
 
 changelog:
   sort: asc
