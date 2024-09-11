@@ -1,6 +1,5 @@
 FROM alpine:latest
 
-COPY oma /
+COPY OMA /
 
-ENTRYPOINT ["/oma"]
-
+ENTRYPOINT ["/OMA"]
