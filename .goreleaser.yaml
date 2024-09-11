@@ -29,24 +29,6 @@ dockers:
     ids:
       - OMA
     image_templates:
-      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
-      - "{{ tolower .Env.GITHUB_REPOSITORY }}:latest-arm"
-      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm"
-    goos: linux
-    goarch: arm
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-  - dockerfile: Dockerfile.release
-    ids:
-      - OMA
-    image_templates:
       - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
       - "{{ tolower .Env.GITHUB_REPOSITORY }}:latest-arm64"
       - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm64"
