@@ -23,9 +23,6 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    format_overrides:
-      - goos: windows
-        format: zip
 
 dockers:
   - dockerfile: Dockerfile.release
@@ -86,7 +83,6 @@ dockers:
 docker_manifests:
   - name_template: "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}"
     image_templates:
-      - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
       - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
       - "{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
 
