@@ -30,9 +30,9 @@ archives:
 dockers:
   - dockerfile: Dockerfile.release
     image_templates:
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-arm
-      - {{ $GITHUB_REPOSITORY }}:latest-arm
-      - {{ $GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm
+      - "{{ .ProjectName }}:{{ .Tag }}-arm"
+      - "{{ .ProjectName }}:latest-arm"
+      - "{{ .ProjectName }}:{{ .ShortCommit }}-arm"
     goos: linux
     goarch: arm
     use: buildx
@@ -46,9 +46,9 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
     image_templates:
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-arm64
-      - {{ $GITHUB_REPOSITORY }}:latest-arm64
-      - {{ $GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm64
+      - "{{ .ProjectName }}:{{ .Tag }}-arm64"
+      - "{{ .ProjectName }}:latest-arm64"
+      - "{{ .ProjectName }}:{{ .ShortCommit }}-arm64"
     goos: linux
     goarch: arm64
     use: buildx
@@ -62,9 +62,9 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
     image_templates:
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-amd64
-      - {{ $GITHUB_REPOSITORY }}:latest-amd64
-      - {{ $GITHUB_REPOSITORY }}:{{ .ShortCommit }}-amd64
+      - "{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "{{ .ProjectName }}:latest-amd64"
+      - "{{ .ProjectName }}:{{ .ShortCommit }}-amd64"
     goos: linux
     goarch: amd64
     use: buildx
@@ -78,11 +78,11 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
 
 docker_manifests:
-  - name_template: {{ $GITHUB_REPOSITORY }}-{{ .Tag }}
+  - name_template: "{{ .ProjectName }}-{{ .Tag }}"
     image_templates:
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-arm
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-arm64
-      - {{ $GITHUB_REPOSITORY }}:{{ .Tag }}-amd64
+      - "{{ .ProjectName }}:{{ .Tag }}-arm"
+      - "{{ .ProjectName }}:{{ .Tag }}-arm64"
+      - "{{ .ProjectName }}:{{ .Tag }}-amd64"
 
 changelog:
   sort: asc
