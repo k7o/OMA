@@ -30,7 +30,7 @@ archives:
 dockers:
   - dockerfile: Dockerfile.release
     ids:
-      - "{{ .ProjectName }}"
+      - OMA
     image_templates:
       - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
       - "{{ .Env.GITHUB_REPOSITORY }}:latest-arm"
@@ -48,7 +48,7 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
     ids:
-      - "{{ .ProjectName }}"
+      - OMA
     image_templates:
       - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
       - "{{ .Env.GITHUB_REPOSITORY }}:latest-arm64"
@@ -66,7 +66,7 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
     ids:
-      - "{{ .ProjectName }}"
+      - OMA
     image_templates:
       - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
       - "{{ .Env.GITHUB_REPOSITORY }}:latest-amd64"
@@ -84,7 +84,7 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
 
 docker_manifests:
-  - name_template: "{{ .Env.GITHUB_REPOSITORY }}-{{ .Tag }}"
+  - name_template: "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}"
     image_templates:
       - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
       - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
