@@ -29,10 +29,12 @@ archives:
 
 dockers:
   - dockerfile: Dockerfile.release
+    ids:
+      - "{{ .ProjectName }}"
     image_templates:
-      - "{{ .ProjectName }}:{{ .Tag }}-arm"
-      - "{{ .ProjectName }}:latest-arm"
-      - "{{ .ProjectName }}:{{ .ShortCommit }}-arm"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
+      - "{{ .Env.GITHUB_REPOSITORY }}:latest-arm"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm"
     goos: linux
     goarch: arm
     use: buildx
@@ -45,10 +47,12 @@ dockers:
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
+    ids:
+      - "{{ .ProjectName }}"
     image_templates:
-      - "{{ .ProjectName }}:{{ .Tag }}-arm64"
-      - "{{ .ProjectName }}:latest-arm64"
-      - "{{ .ProjectName }}:{{ .ShortCommit }}-arm64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:latest-arm64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-arm64"
     goos: linux
     goarch: arm64
     use: buildx
@@ -61,10 +65,12 @@ dockers:
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.version={{.Version}}"
   - dockerfile: Dockerfile.release
+    ids:
+      - "{{ .ProjectName }}"
     image_templates:
-      - "{{ .ProjectName }}:{{ .Tag }}-amd64"
-      - "{{ .ProjectName }}:latest-amd64"
-      - "{{ .ProjectName }}:{{ .ShortCommit }}-amd64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:latest-amd64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .ShortCommit }}-amd64"
     goos: linux
     goarch: amd64
     use: buildx
@@ -78,11 +84,11 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
 
 docker_manifests:
-  - name_template: "{{ .ProjectName }}-{{ .Tag }}"
+  - name_template: "{{ .Env.GITHUB_REPOSITORY }}-{{ .Tag }}"
     image_templates:
-      - "{{ .ProjectName }}:{{ .Tag }}-arm"
-      - "{{ .ProjectName }}:{{ .Tag }}-arm64"
-      - "{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
+      - "{{ .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
 
 changelog:
   sort: asc
