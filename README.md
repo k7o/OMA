@@ -9,10 +9,68 @@ manage your policies and data, and test them against your own services.
 - **Policy Management**: Manage your policies and data.
 - **Service Testing**: Test your policies against your own services.
 - **Decision Logs**: View the decision logs of your policies.
-- **Decision Tree**: View the decision tree of your policies.
 
-## Run OPA locally
+|                 Playground                 |                 Decision Logs                 |
+| :----------------------------------------: | :-------------------------------------------: |
+| ![Policy Editor](./assets/playground.jpeg) | ![Decision Logs](./assets/decision_logs.jpeg) |
+
+## Installation
+
+### Environment Variables
+
+| Variable              | Type                                 | Description                           | Default                                                                 |
+| --------------------- | ------------------------------------ | ------------------------------------- | ----------------------------------------------------------------------- |
+| `TRANSPORT_HTTP_PORT` | `int`                                | The port to run the HTTP server on    | `6060`                                                                  |
+| `LOG_LEVEL`           | `int`                                | The log level of the application      | `0`                                                                     |
+| `OPA_DOWNLOAD_URL`    | `string`                             | The URL to download the OPA server on | `https://openpolicyagent.org/downloads/v0.64.1/opa_darwin_arm64_static` |
+| `REVISION_CONFIG_*`   | [Revision Config](#revision_config_) | Revision API's                        | ``                                                                      |
+
+#### `REVISION_CONFIG_*`
+
+Revisions are used to fetch the policies and data from a repository, so that requests can be replayed against a specific revision.
+
+> **Note:** If the provider you're seeking is not listed, you can implement your own provider by implementing the [Provider interface](./contract/repositories.go).
+
+##### Gitlab
+
+| Variable                               | Type     | Description                          | Default                                           |
+| -------------------------------------- | -------- | ------------------------------------ | ------------------------------------------------- |
+| `REVISION_CONFIG_GITLAB_PACKAGES_URL`  | `string` | The URL to the Gitlab Packages API   | `https://gitlab.com/api/v4/projects/xxx/packages` |
+| `REVISION_CONFIG_GITLAB_PRIVATE_TOKEN` | `string` | The private token to use for the API | `glpat-xxxx-xxxx-xxxx-xxxx`                       |
+
+## Usage
+
+The most basic usage of this application is to run the playground locally without a OPA server.
+This limits the functionality to just writing and testing policies and data.
+
+To make full use of the application, including it's features to browse and replay decisions, you need to run a OPA server.
+
+### Run an OPA server
+
+The application has an endpoint for processing decision logs, which need to be configured in the OPA configuration yaml at startup.
+
+There are 2 parts of the configuration that are important for the application to work, the `decision_logs` and the `services` section.
+In the `services` section you need to point to the `oma` service, which is the decision logs API.
+And in the `decision_logs` section you need enable reporting and point to the `oma` service.
+
+A simple configuration could look like this, which can also be found at [./opa-config.example.yaml](./opa-config.example.yaml):
+
+```yaml
+decision_logs:
+  service: oma # The service name must match one of the services in the services section.
+  reporting:
+    min_delay_seconds: 1
+    max_delay_seconds: 3
+  console: true
+
+services:
+  oma:
+    url: http://localhost:8080/api/decision-log
+    response_header_timeout_seconds: 5
+```
+
+Then start the OPA server with the configuration file:
 
 ```bash
-opa run --server --config-file=./config.yaml --addr=localhost:8181 --diagnostic-addr=localhost:8282
+opa run --server --config-file=./opa-config.example.yaml --addr=localhost:8181 --diagnostic-addr=localhost:8282
 ```
