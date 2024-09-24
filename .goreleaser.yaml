@@ -74,3 +74,10 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+release:
+  mode: append
+  footer: |
+    ## Docker Images
+
+    - "ghcr.io/{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}"
