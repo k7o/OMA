@@ -9,19 +9,29 @@ import (
 	"net/http"
 	"oma/models"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
-type GitlabRevisionRepositoryConfig struct {
-	PackagesURL  string `json:"packages_url"`
+type GitlabPackagesRevisionRepositoryConfig struct {
+	URL          string `json:"url"`
 	PrivateToken string `json:"private_token"`
 }
 
-type GitlabRevisionRepository struct {
-	conf *GitlabRevisionRepositoryConfig
+func (c *GitlabPackagesRevisionRepositoryConfig) Validate() error {
+	if c.URL == "" {
+		return fmt.Errorf("url is required")
+	}
+
+	return nil
 }
 
-func NewGitlabRevisionRepository(conf *GitlabRevisionRepositoryConfig) *GitlabRevisionRepository {
-	return &GitlabRevisionRepository{
+type GitlabPackagesRevisionRepository struct {
+	conf *GitlabPackagesRevisionRepositoryConfig
+}
+
+func NewGitlabPackagesRevisionRepository(conf *GitlabPackagesRevisionRepositoryConfig) *GitlabPackagesRevisionRepository {
+	return &GitlabPackagesRevisionRepository{
 		conf: conf,
 	}
 }
@@ -39,8 +49,8 @@ type GitlabPackage struct {
 	LastDownloadedAt interface{} `json:"last_downloaded_at"`
 }
 
-func (r *GitlabRevisionRepository) ListRevisions() ([]models.Revision, error) {
-	url := r.conf.PackagesURL + "?sort=desc"
+func (r *GitlabPackagesRevisionRepository) ListRevisions() ([]models.Revision, error) {
+	url := r.conf.URL + "?sort=desc"
 	if r.conf.PrivateToken != "" {
 		url += fmt.Sprintf("&private_token=%s", r.conf.PrivateToken)
 	}
@@ -50,6 +60,14 @@ func (r *GitlabRevisionRepository) ListRevisions() ([]models.Revision, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Error().Err(err).Msg("error reading response body")
+		}
+		log.Error().Int("status_code", resp.StatusCode).Bytes("body", body).Msg("received bad statuscode from gitlab package repository")
+	}
 
 	var revisions []GitlabPackage
 	if err := json.NewDecoder(resp.Body).Decode(&revisions); err != nil {
@@ -76,8 +94,8 @@ type RevisionFiles []struct {
 	FileName  string    `json:"file_name"`
 }
 
-func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string, error) {
-	url := fmt.Sprintf("%s/%s/package_files", r.conf.PackagesURL, packageId)
+func (r *GitlabPackagesRevisionRepository) ListRevisionFiles(packageId string) ([]string, error) {
+	url := fmt.Sprintf("%s/%s/package_files", r.conf.URL, packageId)
 	if r.conf.PrivateToken != "" {
 		url += fmt.Sprintf("?private_token=%s", r.conf.PrivateToken)
 	}
@@ -100,8 +118,8 @@ func (r *GitlabRevisionRepository) ListRevisionFiles(packageId string) ([]string
 	return result, nil
 }
 
-func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*models.Bundle, error) {
-	url := fmt.Sprintf("%s/?package_version=%s", r.conf.PackagesURL, revisionId)
+func (r *GitlabPackagesRevisionRepository) DownloadRevisionById(revisionId string) (*models.Bundle, error) {
+	url := fmt.Sprintf("%s/?package_version=%s", r.conf.URL, revisionId)
 	if r.conf.PrivateToken != "" {
 		url += fmt.Sprintf("&private_token=%s", r.conf.PrivateToken)
 	}
@@ -149,8 +167,8 @@ func (r *GitlabRevisionRepository) DownloadRevisionById(revisionId string) (*mod
 	return &bundle, nil
 }
 
-func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.PackagesURL, revision.PackageType, revision.Name, revision.Version, revision.FileName)
+func (r *GitlabPackagesRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.URL, revision.PackageType, revision.Name, revision.Version, revision.FileName)
 	if r.conf.PrivateToken != "" {
 		url += fmt.Sprintf("?private_token=%s", r.conf.PrivateToken)
 	}
@@ -168,8 +186,8 @@ func (r *GitlabRevisionRepository) DownloadRevision(revision *models.Revision) (
 	return files, nil
 }
 
-func (r *GitlabRevisionRepository) DownloadRevisionForPackage(packageId string, filename string) (*models.Bundle, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s", r.conf.PackagesURL, packageId))
+func (r *GitlabPackagesRevisionRepository) DownloadRevisionForPackage(packageId string, filename string) (*models.Bundle, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s", r.conf.URL, packageId))
 	if err != nil {
 		return nil, err
 	}

@@ -31,12 +31,21 @@ Revisions are used to fetch the policies and data from a repository, so that req
 
 > **Note:** If the provider you're seeking is not listed, you can implement your own provider by implementing the [Provider interface](./contract/repositories.go).
 
-##### Gitlab
+##### Gitlab Packages Registry
 
-| Variable                               | Type     | Description                          | Default                                           |
-| -------------------------------------- | -------- | ------------------------------------ | ------------------------------------------------- |
-| `REVISION_CONFIG_GITLAB_PACKAGES_URL`  | `string` | The URL to the Gitlab Packages API   | `https://gitlab.com/api/v4/projects/xxx/packages` |
-| `REVISION_CONFIG_GITLAB_PRIVATE_TOKEN` | `string` | The private token to use for the API | `glpat-xxxx-xxxx-xxxx-xxxx`                       |
+| Variable                                        | Type              | Description                          | Default                                           |
+| ----------------------------------------------- | ----------------- | ------------------------------------ | ------------------------------------------------- |
+| `REVISION_CONFIG_TYPE`                          | `gitlab_packages` | Set the type to `gitlab_packages`    | ``                                                |
+| `REVISION_CONFIG_GITLAB_PACKAGES_URL`           | `string`          | The URL to the Gitlab Packages API   | `https://gitlab.com/api/v4/projects/xxx/packages` |
+| `REVISION_CONFIG_GITLAB_PACKAGES_PRIVATE_TOKEN` | `string`          | The private token to use for the API | `glpat-xxxx-xxxx-xxxx-xxxx`                       |
+
+##### Gitlab Container Registry
+
+| Variable                                         | Type               | Description                              | Default                                           |
+| ------------------------------------------------ | ------------------ | ---------------------------------------- | ------------------------------------------------- |
+| `REVISION_CONFIG_TYPE`                           | `gitlab_container` | Set the type to `gitlab_container`       | ``                                                |
+| `REVISION_CONFIG_GITLAB_CONTAINER_URL`           | `string`           | The URL to the Gitlab Container Registry | `https://gitlab.com/api/v4/projects/xxx/packages` |
+| `REVISION_CONFIG_GITLAB_CONTAINER_PRIVATE_TOKEN` | `string`           | The private token to use for the API     | `glpat-xxxx-xxxx-xxxx-xxxx`                       |
 
 ## Usage
 

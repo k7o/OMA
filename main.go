@@ -27,7 +27,11 @@ func main() {
 		log.Fatal().Err(err).Msg("initializing environment variables")
 	}
 
-	log.Info().Msgf("Loaded configuration: %+v", conf)
+	if err := conf.Validate(); err != nil {
+		log.Fatal().Err(err).Msg("invalid configuration")
+	}
+
+	log.Info().Msg("Loaded configuration")
 
 	zerolog.SetGlobalLevel(conf.LogLevel)
 	db, err := internalDb.InitInMemoryDatabase(ctx)
@@ -37,7 +41,8 @@ func main() {
 
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
-	revisionRepository := revision.NewGitlabRevisionRepository(&conf.RevisionConfig.Gitlab)
+
+	revisionRepository := revision.NewGitlabPackagesRevisionRepository(&conf.RevisionConfig.GitlabPackages)
 	opaExecutable, err := opa.Download(conf.OpaDownloadUrl)
 	if err != nil {
 		log.Fatal().Err(err).Msg("downloading opa")
