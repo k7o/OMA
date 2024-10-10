@@ -4,3 +4,4 @@ __debug_*
 dist/
 .env
 opa
+oma
