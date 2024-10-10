@@ -6,6 +6,7 @@ type RevisionConfig struct {
 	Type           contract.RevisionRepositoryType
 	GitlabPackages GitlabPackagesRevisionRepositoryConfig
 	OCI            OCIRevisionRepositoryConfig
+	PolicyProxy    PolicyProxyRevisionRepositoryConfig
 }
 
 func (c *RevisionConfig) Validate() error {
@@ -18,6 +19,8 @@ func (c *RevisionConfig) Validate() error {
 		return c.GitlabPackages.Validate()
 	case contract.RevisionTypeOCI:
 		return c.OCI.Validate()
+	case contract.RevisionTypePolicyProxy:
+		return c.PolicyProxy.Validate()
 	}
 
 	return nil
