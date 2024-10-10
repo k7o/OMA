@@ -86,9 +86,9 @@ opa run --server --config-file=./opa-config.example.yaml --addr=localhost:8181 -
 
 ## Workaround VECOZO workstation issues
 
-When developing this app on VECOZO corporate workstations, antivirus measures may block the download of the trifles package when executing a `go build`. A workaround is to download the package manually and place it in a `gocache` directory. Afterwards the package can be replaced with the local version (see `go.mod.vecozo`).
+When developing this app on VECOZO corporate workstations, antivirus measures may block the download of the trifles package when executing `go build`. A workaround is to download the package manually and place it in a `gocache` folder. By executing a build script, the local package can be included in the build process.
 
-Unpack trifles package:
+Store trifles package locally:
 
 ```bash
 wget https://proxy.golang.org/github.com/dgryski/trifles/@v/v0.0.0-20230903005119-f50d829f2e54.zip
@@ -98,13 +98,13 @@ go mod init trifles
 go mod tidy
 ```
 
-Tidy up the go.mod file with local trifles package:
+Tidy with local trifles package:
 
 ```bash
 vecozo_tidy.sh
 ```
 
-Build app with local trifles package:
+Build with local trifles package:
 
 ```bash
 vecozo_build.sh
