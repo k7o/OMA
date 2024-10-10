@@ -42,7 +42,7 @@ func main() {
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
 
-	revisionRepository := revision.NewGitlabPackagesRevisionRepository(&conf.RevisionConfig.GitlabPackages)
+	revisionRepository := revision.NewPolicyProxyRevisionRepository(&conf.RevisionConfig.PolicyProxyPackages)
 	opaExecutable, err := opa.Download(conf.OpaDownloadUrl)
 	if err != nil {
 		log.Fatal().Err(err).Msg("downloading opa")

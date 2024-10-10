@@ -3,8 +3,9 @@ package revision
 import "oma/contract"
 
 type RevisionConfig struct {
-	Type           contract.RevisionRepositoryType
-	GitlabPackages GitlabPackagesRevisionRepositoryConfig
+	Type                contract.RevisionRepositoryType
+	GitlabPackages      GitlabPackagesRevisionRepositoryConfig
+	PolicyProxyPackages PolicyProxyRevisionRepositoryConfig
 }
 
 func (c *RevisionConfig) Validate() error {
@@ -15,6 +16,9 @@ func (c *RevisionConfig) Validate() error {
 	switch c.Type {
 	case contract.GitlabPackages:
 		return c.GitlabPackages.Validate()
+	case contract.PolicyProxy:
+		return c.PolicyProxyPackages.Validate()
+
 	}
 
 	return nil

@@ -30,11 +30,12 @@ type RevisionRepositoryType string
 const (
 	GitlabPackages  RevisionRepositoryType = "gitlab_packages"
 	GitlabContainer RevisionRepositoryType = "gitlab_container"
+	PolicyProxy     RevisionRepositoryType = "policy_proxy"
 )
 
 func (t *RevisionRepositoryType) Validate() error {
 	switch *t {
-	case GitlabPackages, GitlabContainer:
+	case GitlabPackages, GitlabContainer, PolicyProxy:
 		return nil
 	case "":
 		return fmt.Errorf("REVISION_CONFIG_TYPE is required")
