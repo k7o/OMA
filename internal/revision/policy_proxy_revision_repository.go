@@ -97,12 +97,6 @@ func (r *PolicyProxyRevisionRepository) ListRevisionFiles(packageId string) ([]s
 		return nil, err
 	}
 
-	// bodyBytes, err := io.ReadAll(resp.Body)
-
-	// // Log the body
-	// bodyString := string(bodyBytes)
-	// log.Info().Msg(bodyString)
-
 	var files PolicyProxyRevisionFiles
 	if err := json.NewDecoder(resp.Body).Decode(&files); err != nil {
 		log.Info().Msg(err.Error())
@@ -128,7 +122,7 @@ func (r *PolicyProxyRevisionRepository) DownloadRevisionById(revisionId string) 
 	}
 	defer resp.Body.Close()
 
-	var packages []GitlabPackage
+	var packages []PolicyProxyPackage
 	if err := json.NewDecoder(resp.Body).Decode(&packages); err != nil {
 		return nil, err
 	}
@@ -148,7 +142,7 @@ func (r *PolicyProxyRevisionRepository) DownloadRevisionById(revisionId string) 
 			PackageId:   fmt.Sprintf("%d", packages[0].ID),
 			FileName:    filename,
 			Name:        packages[0].Name,
-			PackageType: packages[0].PackageType,
+			PackageType: "policy-proxy",
 			Version:     packages[0].Version,
 			CreatedAt:   packages[0].CreatedAt,
 		})
@@ -168,7 +162,7 @@ func (r *PolicyProxyRevisionRepository) DownloadRevisionById(revisionId string) 
 func (r *PolicyProxyRevisionRepository) DownloadRevision(revision *models.Revision) (*models.Bundle, error) {
 	log.Info().Msg("DownloadRevision")
 
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", r.conf.URL, revision.PackageType, revision.Name, revision.Version, revision.FileName)
+	url := fmt.Sprintf("%s/%s/%s", r.conf.URL, revision.PackageId, revision.FileName)
 
 	resp, err := http.Get(url)
 	if err != nil {
