@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"oma/app"
+	"oma/contract"
 	"oma/internal/config"
 	internalDb "oma/internal/db"
 	"oma/internal/decisionlogs"
@@ -42,7 +43,14 @@ func main() {
 	decisionLogRepository := decisionlogs.New(db)
 	playgroundLogRepository := playgroundlogs.New(db)
 
-	revisionRepository := revision.NewGitlabPackagesRevisionRepository(&conf.RevisionConfig.GitlabPackages)
+	var revisionRepository contract.RevisionRepository
+	switch conf.RevisionConfig.Type {
+	case contract.RevisionTypeGitlabPackages:
+		revisionRepository = revision.NewGitlabPackagesRevisionRepository(&conf.RevisionConfig.GitlabPackages)
+	case contract.RevisionTypeOCI:
+		revisionRepository = revision.NewOCIRevisionRepository(&conf.RevisionConfig.OCI)
+	}
+
 	opaExecutable, err := opa.Download(conf.OpaDownloadUrl)
 	if err != nil {
 		log.Fatal().Err(err).Msg("downloading opa")

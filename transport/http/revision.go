@@ -46,8 +46,9 @@ func (s *Server) downloadRevisionById(w http.ResponseWriter, r *http.Request) {
 func (s *Server) downloadPackage(w http.ResponseWriter, r *http.Request) {
 	req := &models.DownloadBundleRequest{
 		Revision: models.Revision{
-			PackageId: chi.URLParam(r, "package_id"),
-			FileName:  chi.URLParam(r, "file_name"),
+			PackageId:   chi.URLParam(r, "package_id"),
+			FileName:    chi.URLParam(r, "file_name"),
+			PackageType: r.URL.Query().Get("package_type"),
 		},
 	}
 

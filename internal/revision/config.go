@@ -5,6 +5,7 @@ import "oma/contract"
 type RevisionConfig struct {
 	Type           contract.RevisionRepositoryType
 	GitlabPackages GitlabPackagesRevisionRepositoryConfig
+	OCI            OCIRevisionRepositoryConfig
 }
 
 func (c *RevisionConfig) Validate() error {
@@ -13,8 +14,10 @@ func (c *RevisionConfig) Validate() error {
 	}
 
 	switch c.Type {
-	case contract.GitlabPackages:
+	case contract.RevisionTypeGitlabPackages:
 		return c.GitlabPackages.Validate()
+	case contract.RevisionTypeOCI:
+		return c.OCI.Validate()
 	}
 
 	return nil

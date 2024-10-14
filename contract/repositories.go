@@ -28,13 +28,13 @@ type RevisionRepository interface {
 type RevisionRepositoryType string
 
 const (
-	GitlabPackages  RevisionRepositoryType = "gitlab_packages"
-	GitlabContainer RevisionRepositoryType = "gitlab_container"
+	RevisionTypeGitlabPackages RevisionRepositoryType = "gitlab_packages"
+	RevisionTypeOCI            RevisionRepositoryType = "oci"
 )
 
 func (t *RevisionRepositoryType) Validate() error {
 	switch *t {
-	case GitlabPackages, GitlabContainer:
+	case RevisionTypeGitlabPackages, RevisionTypeOCI:
 		return nil
 	case "":
 		return fmt.Errorf("REVISION_CONFIG_TYPE is required")

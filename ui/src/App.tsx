@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/new/empty" component={NewEmptyPlayground} />
         <Route path="/new/from-repository" component={NewFromRepository} />
         <Route path="/new/from-bundle" component={NewFromBundle} />
-        <Route path="/new/from-bundle/:package_id" component={BundleFileSelection} />
+        <Route path="/new/from-bundle/*package_id" component={BundleFileSelection} />
       </Router>
     </DataProvider>
   )
