@@ -40,7 +40,7 @@ const RootPage = (props: RouteSectionProps<unknown>) => {
         <SidebarItem href="/play" icon={PlayIcon} />
         <SidebarItem href="/decision-logs" icon={LogsIcon} />
       </div>
-      <div class="w-full">{props.children}</div>
+      <div class="flex flex-col w-full h-full">{props.children}</div>
     </div>
   )
 }
@@ -50,8 +50,12 @@ const SidebarItem = (props: {
   icon: Component<JSX.SvgSVGAttributes<SVGSVGElement>>
 }) => {
   const location = useLocation()
+
   return (
-    <A href={props.href} class="flex flex-col my-2 p-2 items-center text-sm font-thin hover:bg-gray-200 rounded-md">
+    <A
+      href={props.href}
+      class="flex flex-col my-2 p-2 items-center text-sm font-thin hover:bg-gray-200 rounded-md"
+    >
       <props.icon
         class={`w-8 h-8 ${location.pathname === props.href ? 'stroke-blue-400' : 'stroke-white'}`}
       />

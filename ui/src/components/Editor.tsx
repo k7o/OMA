@@ -8,7 +8,6 @@ import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
 import { backend_url } from '../utils/backend_url'
 import FilePlus from '../assets/file-plus.svg'
-import TrashIcon from '../assets/trash.svg'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
