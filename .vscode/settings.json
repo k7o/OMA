@@ -1,9 +1,4 @@
 {
-    "cSpell.words": [
-        "keyid",
-        "ocispec",
-        "playgroundlogs",
-        "SQLC",
-        "tolower"
-    ]
+  "cSpell.words": ["keyid", "ocispec", "playgroundlogs", "SQLC", "tolower"],
+  "vitest.enable": true
 }

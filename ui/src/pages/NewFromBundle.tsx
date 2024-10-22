@@ -44,7 +44,6 @@ export const NewFromBundle = () => {
           <For each={revisions()} fallback={<li class="px-2">No revisions yet</li>}>
             {(revision) => {
               const dateString = new Date(revision.created_at).toISOString()
-              console.log(revision.package_type)
               return (
                 <tr
                   class="hover:bg-slate-200 hover:cursor-pointer"

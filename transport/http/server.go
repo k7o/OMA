@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"oma/contract"
-	"oma/models"
 	"oma/ui"
 
 	"github.com/go-chi/chi"
@@ -78,98 +77,8 @@ func (s *Server) Run() error {
 	return nil
 }
 
-func (s *Server) eval(w http.ResponseWriter, r *http.Request) {
-	req, err := jsonReqBody[models.EvalRequest](w, r)
-	if err != nil {
-		return
-	}
-
-	result, err := s.app.Eval(r.Context(), req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-}
-
-func (s *Server) format(w http.ResponseWriter, r *http.Request) {
-	req, err := jsonReqBody[models.FormatRequest](w, r)
-	if err != nil {
-		return
-	}
-
-	result, err := s.app.Format(r.Context(), req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-}
-
-func (s *Server) lint(w http.ResponseWriter, r *http.Request) {
-	req, err := jsonReqBody[models.LintRequest](w, r)
-	if err != nil {
-		return
-	}
-
-	result, err := s.app.Lint(r.Context(), req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-}
-
-func (s *Server) testAll(w http.ResponseWriter, r *http.Request) {
-	req, err := jsonReqBody[models.EvalRequest](w, r)
-	if err != nil {
-		return
-	}
-
-	result, err := s.app.TestAll(r.Context(), req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-}
-
 func (s *Server) playgroundLogs(w http.ResponseWriter, r *http.Request) {
 	logs, err := s.app.PlaygroundLogs(r.Context())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(logs)
-}
-
-func (s *Server) pushDecisionLog(w http.ResponseWriter, r *http.Request) {
-	req, err := jsonReqBody[models.DecisionLogRequest](w, r)
-	if err != nil {
-		log.Debug().Err(err).Msg("failed to decode request body")
-		return
-	}
-
-	if err := s.app.PushDecisionLogs(r.Context(), req); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-}
-
-func (s *Server) listDecisionLogs(w http.ResponseWriter, r *http.Request) {
-	logs, err := s.app.ListDecisionLogs(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

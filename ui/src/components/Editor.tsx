@@ -8,6 +8,7 @@ import { Lint } from '../types/Lint'
 import { ListItem } from './ListItem'
 import { backend_url } from '../utils/backend_url'
 import FilePlus from '../assets/file-plus.svg'
+import { buildTree, FileTree } from './FileTree'
 
 export const Editor = () => {
   const [policyInstance, setPolicyInstance] = createSignal<{
@@ -124,30 +125,17 @@ export const Editor = () => {
                 gutterClass="gutter gutter-horizontal"
                 sizes={[35, 65]}
               >
-                <div class="flex flex-col h-full w-full">
+                <div class="flex flex-col h-full w-full overflow-y-scroll">
                   <h3 class="bg-gray-400 text-white px-2 flex justify-between">
                     FILES
                     <button onClick={() => setCreateFile('')}>
                       <FilePlus class="hover:bg-slate-300 rounded-md p-0.5" />
                     </button>
                   </h3>
-                  <For each={Object.keys(bundle)} fallback={<li class="px-2 pt-4">No files</li>}>
-                    {(file) => (
-                      <button
-                        class={`px-4 text-left py-1 break-words mx-2 mt-2 rounded hover:bg-slate-300 bg-gray-100 ${
-                          editingPolicy() === file && 'bg-gray-300'
-                        }`}
-                        onClick={() => setEditingPolicy(file)}
-                        onKeyDown={(e) => {
-                          if (e.metaKey && e.key === 'Backspace') {
-                            console.log('This should delete ', file)
-                          }
-                        }}
-                      >
-                        {file}
-                      </button>
-                    )}
-                  </For>
+                  <FileTree
+                    directory={buildTree(bundle)}
+                    onClick={(filePath) => setEditingPolicy(filePath)}
+                  />
                   <Show when={createFile() != null}>
                     <button class="px-4 text-left py-1 break-words mx-2 mt-2 rounded hover:bg-slate-300 bg-gray-100">
                       <input
@@ -209,7 +197,6 @@ export const Editor = () => {
             </div>
           </SplitPane>
         </div>
-        {/* <div class="flex flex-col flex-wrap"> */}
         <div>
           <SplitPane
             direction="vertical"
