@@ -8,6 +8,7 @@ import { cn } from "~/lib/utils"
 
 const Dialog = DialogPrimitive.Root
 const DialogTrigger = DialogPrimitive.Trigger
+const DialogClose = DialogPrimitive.CloseButton
 
 const DialogPortal: Component<DialogPrimitive.DialogPortalProps> = (props) => {
   const [, rest] = splitProps(props, ["children"])
@@ -137,5 +138,6 @@ export {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
+  DialogClose,
 }

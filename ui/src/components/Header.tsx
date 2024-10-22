@@ -10,6 +10,7 @@ import SettingsIcon from '../assets/gear-icon.svg'
 import { backend_url } from '../utils/backend_url'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -156,6 +157,8 @@ export const Header = () => {
                     <TextFieldInput type="url" id="path" value={options.path} />
                   </TextField>
                 </div>
+
+                <DialogClose as={Button}>Done</DialogClose>
               </DialogDescription>
             </DialogHeader>
           </DialogContent>
