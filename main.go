@@ -50,7 +50,7 @@ func main() {
 	case contract.RevisionTypeOCI:
 		revisionRepository = revision.NewOCIRevisionRepository(&conf.RevisionConfig.OCI)
 	case contract.RevisionTypePolicyProxy:
-		revisionRepository := revision.NewPolicyProxyRevisionRepository(&conf.RevisionConfig.PolicyProxy)
+		revisionRepository = revision.NewPolicyProxyRevisionRepository(&conf.RevisionConfig.PolicyProxy)
 	}
 
 	opaExecutable, err := opa.Download(conf.OpaDownloadUrl)
